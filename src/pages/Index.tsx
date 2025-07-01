@@ -1,16 +1,36 @@
+
 import React from 'react';
 import { TopBar } from '@/components/spreadsheet/TopBar';
-import { Toolbar } from '@/components/spreadsheet/Toolbar';
-import { SpreadsheetTable } from '@/components/spreadsheet/SpreadsheetTable';
+import { FunctionalToolbar } from '@/components/spreadsheet/FunctionalToolbar';
+import { FunctionalSpreadsheetTable } from '@/components/spreadsheet/FunctionalSpreadsheetTable';
 import { ViewTabs } from '@/components/spreadsheet/ViewTabs';
+import { useSpreadsheet } from '@/hooks/useSpreadsheet';
 
 const Index = () => {
+  const { addRow, exportToCSV } = useSpreadsheet();
+
+  const handleImport = (file: File) => {
+    // Basic CSV import functionality
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      console.log('Imported file content:', text);
+      // Here you would parse the CSV and update the spreadsheet data
+      // For now, just log the content
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="flex overflow-hidden bg-white min-h-screen">
       <div className="w-[1440px] overflow-hidden bg-slate-50 max-md:max-w-full">
         <TopBar />
-        <Toolbar />
-        <SpreadsheetTable />
+        <FunctionalToolbar 
+          onAddRow={addRow}
+          onExport={exportToCSV}
+          onImport={handleImport}
+        />
+        <FunctionalSpreadsheetTable />
         <ViewTabs />
       </div>
     </div>
