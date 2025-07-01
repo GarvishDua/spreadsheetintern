@@ -1,11 +1,17 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import React from 'react';
+import { TopBar } from '@/components/spreadsheet/TopBar';
+import { Toolbar } from '@/components/spreadsheet/Toolbar';
+import { SpreadsheetTable } from '@/components/spreadsheet/SpreadsheetTable';
+import { ViewTabs } from '@/components/spreadsheet/ViewTabs';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="flex overflow-hidden bg-white min-h-screen">
+      <div className="w-[1440px] overflow-hidden bg-slate-50 max-md:max-w-full">
+        <TopBar />
+        <Toolbar />
+        <SpreadsheetTable />
+        <ViewTabs />
       </div>
     </div>
   );
