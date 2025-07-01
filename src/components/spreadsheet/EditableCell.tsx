@@ -20,19 +20,21 @@ export const EditableCell: React.FC<EditableCellProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
   const inputRef = useRef<HTMLInputElement>(null);
+  const selectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
     }
+    if (isEditing && selectRef.current) {
+      selectRef.current.focus();
+    }
   }, [isEditing]);
 
   const handleDoubleClick = () => {
-    if (type !== 'status') {
-      setEditValue(String(value));
-      setIsEditing(true);
-    }
+    setEditValue(String(value));
+    setIsEditing(true);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -55,6 +57,47 @@ export const EditableCell: React.FC<EditableCellProps> = ({
   }`;
 
   if (isEditing) {
+    // Special dropdown for status and priority
+    if (type === 'status') {
+      return (
+        <div className={cellClasses}>
+          <select
+            ref={selectRef}
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={handleSave}
+            className="w-full h-full bg-transparent border-none outline-none text-xs"
+          >
+            <option value="In-process">In-process</option>
+            <option value="Need to start">Need to start</option>
+            <option value="Complete">Complete</option>
+            <option value="Blocked">Blocked</option>
+          </select>
+        </div>
+      );
+    }
+
+    // Special dropdown for priority (when field name is priority)
+    if (String(value) === 'High' || String(value) === 'Medium' || String(value) === 'Low') {
+      return (
+        <div className={cellClasses}>
+          <select
+            ref={selectRef}
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={handleSave}
+            className="w-full h-full bg-transparent border-none outline-none text-xs"
+          >
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+      );
+    }
+
     return (
       <div className={cellClasses}>
         <input
@@ -95,6 +138,17 @@ export const EditableCell: React.FC<EditableCellProps> = ({
           </>
         );
       default:
+        // Handle priority colors for text type
+        if (String(value) === 'High' || String(value) === 'Medium' || String(value) === 'Low') {
+          return (
+            <div className={`text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto ${
+              String(value) === 'High' ? 'text-[#EF4D44]' : 
+              String(value) === 'Medium' ? 'text-[#C29210]' : 'text-[#1A8CFF]'
+            }`}>
+              {String(value)}
+            </div>
+          );
+        }
         return (
           <div className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">
             {String(value)}

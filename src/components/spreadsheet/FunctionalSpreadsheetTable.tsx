@@ -132,7 +132,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         onFilter={filterData}
       />
 
-      {/* ABC Function Column - Fixed cell gap issue */}
+      {/* ABC Function Column */}
       <FunctionColumn
         title="ABC"
         icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/40afbf69a3542958fa4493f9c6793374bfa26a93?placeholderIfAbsent=true"
@@ -165,45 +165,38 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
       >
         <div className="flex w-full items-stretch gap-px text-xs leading-none flex-1 h-full">
           {/* Priority column */}
-          <div className="font-semibold whitespace-nowrap flex-1 shrink basis-[0%]">
-            <div className="items-center flex min-h-8 w-full gap-1 text-[#655C80] h-8 bg-[#EAE3FC] pl-2 pr-1">
-              <div className="self-stretch flex w-full items-center gap-1 flex-1 shrink basis-[0%] my-auto">
-                <div className="text-[#655C80] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">Priority</div>
-              </div>
-            </div>
-            {filteredData.map((row, index) => (
-              <div key={index} className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-center h-8 bg-white px-2">
-                <div className={`text-ellipsis self-stretch my-auto ${
-                  row.priority === 'High' ? 'text-[#EF4D44]' : 
-                  row.priority === 'Medium' ? 'text-[#C29210]' : 'text-[#1A8CFF]'
-                }`}>
-                  {row.priority}
-                </div>
-              </div>
-            ))}
-            {Array.from({ length: Math.max(0, 19 - filteredData.length) }, (_, index) => (
-              <div key={`priority-filler-${index}`} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
-            ))}
-            <div className="flex min-h-3.5 w-full gap-2 h-8 bg-white py-2" />
-          </div>
+          <FunctionalTableColumn
+            title="Priority"
+            field="priority"
+            icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/34581e26dbfbba34a69c34509081720fa152bb61?placeholderIfAbsent=true"
+            width="flex-1 shrink basis-[0%]"
+            data={filteredData}
+            type="text"
+            bgColor="#EAE3FC"
+            textColor="#655C80"
+            selectedCell={selectedCell}
+            onUpdateCell={updateCell}
+            onSelectCell={selectCell}
+            onSort={sortData}
+            onFilter={filterData}
+          />
           
           {/* Due Date column */}
-          <div className="text-[#121212] font-normal flex-1 shrink basis-[0%]">
-            <div className="items-center flex min-h-8 w-full gap-1 text-[#655C80] font-semibold h-8 bg-[#EAE3FC] pl-2 pr-1">
-              <div className="self-stretch flex w-full items-center gap-1 flex-1 shrink basis-[0%] my-auto">
-                <div className="text-[#655C80] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">Due Date</div>
-              </div>
-            </div>
-            {filteredData.map((row, index) => (
-              <div key={index} className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden whitespace-nowrap text-right h-8 bg-white px-2">
-                <div className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">{row.dueDate}</div>
-              </div>
-            ))}
-            {Array.from({ length: Math.max(0, 19 - filteredData.length) }, (_, index) => (
-              <div key={`date-filler-${index}`} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
-            ))}
-            <div className="flex min-h-3.5 w-full gap-2 h-8 bg-white py-2" />
-          </div>
+          <FunctionalTableColumn
+            title="Due Date"
+            field="dueDate"
+            icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b49eeec444b1234a6d36e5b7250b0a8b3cb37fe8?placeholderIfAbsent=true"
+            width="flex-1 shrink basis-[0%]"
+            data={filteredData}
+            type="date"
+            bgColor="#EAE3FC"
+            textColor="#655C80"
+            selectedCell={selectedCell}
+            onUpdateCell={updateCell}
+            onSelectCell={selectCell}
+            onSort={sortData}
+            onFilter={filterData}
+          />
         </div>
       </FunctionColumn>
 
@@ -214,25 +207,21 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         bgColor="#FAC2AF"
         textColor="#695149"
       >
-        <div className="w-full max-w-[124px] text-xs leading-none flex-1">
-          <div className="items-center flex min-h-8 w-full gap-1 text-[#8C6C62] font-semibold h-8 bg-[#FFE9E0] pl-2 pr-1">
-            <div className="self-stretch flex w-full items-center gap-1 flex-1 shrink basis-[0%] my-auto">
-              <div className="text-[#8C6C62] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">Est. Value</div>
-            </div>
-          </div>
-          {filteredData.map((row, index) => (
-            <div key={index} className="justify-center items-center flex min-h-8 w-full gap-1 overflow-hidden whitespace-nowrap text-right h-8 bg-white px-2">
-              <div className="text-[#121212] text-ellipsis font-normal self-stretch flex-1 shrink basis-[0%] my-auto">
-                {row.estValue.toLocaleString()}
-              </div>
-              <div className="text-[#AFAFAF] text-ellipsis font-medium self-stretch my-auto">₹</div>
-            </div>
-          ))}
-          {Array.from({ length: Math.max(0, 19 - filteredData.length) }, (_, index) => (
-            <div key={`value-filler-${index}`} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
-          ))}
-          <div className="flex min-h-3.5 w-full gap-2 h-8 bg-white py-2" />
-        </div>
+        <FunctionalTableColumn
+          title="Est. Value"
+          field="estValue"
+          icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/8a41883192674f8b4caa1e387e0ae048ffa42dff?placeholderIfAbsent=true"
+          width="w-full max-w-[124px]"
+          data={filteredData}
+          type="currency"
+          bgColor="#FFE9E0"
+          textColor="#8C6C62"
+          selectedCell={selectedCell}
+          onUpdateCell={updateCell}
+          onSelectCell={selectCell}
+          onSort={sortData}
+          onFilter={filterData}
+        />
       </FunctionColumn>
 
       {/* Custom columns */}
