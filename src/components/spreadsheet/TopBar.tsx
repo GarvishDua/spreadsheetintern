@@ -1,4 +1,6 @@
+
 import React from 'react';
+import { UserProfile } from './UserProfile';
 
 export const TopBar: React.FC = () => {
   return (
@@ -66,19 +68,7 @@ export const TopBar: React.FC = () => {
           </div>
         </button>
         
-        <div className="items-center self-stretch flex gap-2 bg-white my-auto pl-2 pr-3 py-1.5 rounded-lg">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/0de300cd80ed943f24f32f49e23c436dcc49d242?placeholderIfAbsent=true"
-            className="aspect-[1] object-contain w-7 self-stretch shrink-0 my-auto rounded-[50%]"
-            alt="User profile picture"
-          />
-          <div className="self-stretch w-14 max-w-[120px] my-auto">
-            <div className="text-[#121212] text-xs leading-none">John Doe</div>
-            <div className="text-[#757575] text-ellipsis text-[10px] leading-[1.2]">
-              john.doe@companyname.com
-            </div>
-          </div>
-        </div>
+        <UserProfile />
       </div>
     </header>
   );

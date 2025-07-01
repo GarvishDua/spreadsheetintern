@@ -13,7 +13,8 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
     sortData, 
     filterData, 
     getFilteredData,
-    addColumn
+    addColumn,
+    customColumns
   } = useSpreadsheet();
 
   const filteredData = getFilteredData();
@@ -131,31 +132,18 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         onFilter={filterData}
       />
 
-      {/* ABC Function Column */}
-      <div className="w-[124px]">
-        <div className="justify-center items-center flex min-h-8 w-full gap-2 h-8 bg-[#D2E0D4] px-4">
-          <div className="rounded self-stretch flex items-center gap-1 my-auto px-1 py-0.5">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/40afbf69a3542958fa4493f9c6793374bfa26a93?placeholderIfAbsent=true"
-              className="aspect-[1] object-contain w-4 self-stretch shrink-0 my-auto"
-              alt="ABC function icon"
-            />
-            <div className="text-[#505450] text-sm font-medium leading-none self-stretch my-auto">ABC</div>
-            <button className="rounded self-stretch flex min-h-5 items-center gap-2 justify-center w-5 my-auto" aria-label="ABC function options">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/740b25ecb99bbb440cf728c16b4c9edbbd4f2036?placeholderIfAbsent=true"
-                className="aspect-[1] object-contain w-4 self-stretch my-auto"
-                alt="Options icon"
-              />
-            </button>
-          </div>
-        </div>
-        
+      {/* ABC Function Column - Fixed cell gap issue */}
+      <FunctionColumn
+        title="ABC"
+        icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/40afbf69a3542958fa4493f9c6793374bfa26a93?placeholderIfAbsent=true"
+        bgColor="#D2E0D4"
+        textColor="#505450"
+      >
         <FunctionalTableColumn
           title="Assigned"
           field="assigned"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/1c4ecaa39d623b1b03ed2a7615002f51c0806fe4?placeholderIfAbsent=true"
-          width="w-full max-w-[124px]"
+          width="w-[124px]"
           data={filteredData}
           type="text"
           bgColor="#E8F0E9"
@@ -166,7 +154,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
         />
-      </div>
+      </FunctionColumn>
 
       {/* Answer a question Function Column */}
       <FunctionColumn
@@ -247,7 +235,32 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         </div>
       </FunctionColumn>
 
-      {/* Add column button - now adjacent to last column */}
+      {/* Custom columns */}
+      {customColumns.map((column, colIndex) => (
+        <div key={colIndex} className="w-[124px]">
+          <div className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
+          <div className="items-center flex min-h-8 w-full gap-1 h-8 bg-[#EEE] pl-2 pr-1">
+            <div className="self-stretch flex w-full items-center gap-1 flex-1 shrink basis-[0%] my-auto">
+              <div className="text-[#757575] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto text-xs font-semibold">
+                {column.name}
+              </div>
+            </div>
+          </div>
+          {filteredData.map((_, rowIndex) => (
+            <div key={rowIndex} className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
+              <div className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">
+                {column.data[rowIndex] || ''}
+              </div>
+            </div>
+          ))}
+          {Array.from({ length: Math.max(0, 19 - filteredData.length) }, (_, index) => (
+            <div key={`custom-filler-${index}`} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
+          ))}
+          <div className="flex min-h-3.5 w-full gap-2 h-8 bg-white py-2" />
+        </div>
+      ))}
+
+      {/* Add column button - adjacent to last column */}
       <div className="w-[40px] flex flex-col">
         <div className="flex min-h-8 w-full h-8 bg-white py-2" />
         <button 

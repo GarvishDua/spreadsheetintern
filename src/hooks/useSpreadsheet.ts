@@ -13,6 +13,7 @@ export interface SpreadsheetState {
   selectedCell: { row: number; col: string } | null;
   sortConfig: { key: string; direction: 'asc' | 'desc' } | null;
   filterConfig: { [key: string]: string };
+  customColumns: { [key: string]: any }[];
 }
 
 export const useSpreadsheet = () => {
@@ -81,7 +82,8 @@ export const useSpreadsheet = () => {
     ],
     selectedCell: null,
     sortConfig: null,
-    filterConfig: {}
+    filterConfig: {},
+    customColumns: []
   });
 
   const updateCell = useCallback((rowIndex: number, field: keyof SpreadsheetData, value: string | number) => {
@@ -114,10 +116,14 @@ export const useSpreadsheet = () => {
   }, [state.data]);
 
   const addColumn = useCallback(() => {
-    console.log('Adding new column - functionality to be implemented');
-    // This would add a new column to the spreadsheet
-    // For now, just log the action
-  }, []);
+    const columnName = `Column ${state.customColumns.length + 1}`;
+    const newColumn = state.data.map(() => '');
+    
+    setState(prev => ({
+      ...prev,
+      customColumns: [...prev.customColumns, { name: columnName, data: newColumn }]
+    }));
+  }, [state.customColumns.length, state.data]);
 
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
