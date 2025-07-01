@@ -13,6 +13,8 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
   onImport
 }) => {
   const [showToolbar, setShowToolbar] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleImportClick = () => {
@@ -24,6 +26,16 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
     if (file) {
       onImport(file);
     }
+  };
+
+  const handleSort = (direction: 'asc' | 'desc') => {
+    console.log(`Sorting ${direction}`);
+    setShowSortMenu(false);
+  };
+
+  const handleFilter = (type: string) => {
+    console.log(`Filtering by ${type}`);
+    setShowFilterMenu(false);
   };
 
   return (
@@ -52,23 +64,71 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
           <span className="text-[#121212] self-stretch my-auto">Hide fields</span>
         </button>
         
-        <button className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-50">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/dd2173c3d4555e1e9d82cf5b4d8b42407f316503?placeholderIfAbsent=true"
-            className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
-            alt="Sort icon"
-          />
-          <span className="text-[#121212] self-stretch my-auto">Sort</span>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowSortMenu(!showSortMenu)}
+            className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-50"
+          >
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/dd2173c3d4555e1e9d82cf5b4d8b42407f316503?placeholderIfAbsent=true"
+              className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
+              alt="Sort icon"
+            />
+            <span className="text-[#121212] self-stretch my-auto">Sort</span>
+          </button>
+          {showSortMenu && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-50 min-w-32">
+              <button
+                onClick={() => handleSort('asc')}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-gray-100"
+              >
+                Sort A → Z
+              </button>
+              <button
+                onClick={() => handleSort('desc')}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-gray-100"
+              >
+                Sort Z → A
+              </button>
+            </div>
+          )}
+        </div>
         
-        <button className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-50">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/9afd84bb9e48fe5d8497bad0e3838204b2a70d22?placeholderIfAbsent=true"
-            className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
-            alt="Filter icon"
-          />
-          <span className="text-[#121212] self-stretch my-auto">Filter</span>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowFilterMenu(!showFilterMenu)}
+            className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-50"
+          >
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/9afd84bb9e48fe5d8497bad0e3838204b2a70d22?placeholderIfAbsent=true"
+              className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
+              alt="Filter icon"
+            />
+            <span className="text-[#121212] self-stretch my-auto">Filter</span>
+          </button>
+          {showFilterMenu && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-50 min-w-40">
+              <button
+                onClick={() => handleFilter('status')}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-gray-100"
+              >
+                Filter by Status
+              </button>
+              <button
+                onClick={() => handleFilter('priority')}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-gray-100"
+              >
+                Filter by Priority
+              </button>
+              <button
+                onClick={() => handleFilter('date')}
+                className="w-full px-3 py-2 text-sm text-left hover:bg-gray-100"
+              >
+                Filter by Date
+              </button>
+            </div>
+          )}
+        </div>
         
         <button className="items-center self-stretch flex gap-1 bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-50">
           <img

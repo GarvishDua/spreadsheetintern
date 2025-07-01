@@ -12,7 +12,8 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
     selectCell, 
     sortData, 
     filterData, 
-    getFilteredData 
+    getFilteredData,
+    addColumn
   } = useSpreadsheet();
 
   const filteredData = getFilteredData();
@@ -246,16 +247,21 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         </div>
       </FunctionColumn>
 
-      {/* Add column */}
-      <div className="border overflow-hidden w-[124px] border-dashed border-[#CBCBCB]">
-        <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden h-8 bg-[#EEE] px-2">
+      {/* Add column button - now adjacent to last column */}
+      <div className="w-[40px] flex flex-col">
+        <div className="flex min-h-8 w-full h-8 bg-white py-2" />
+        <button 
+          onClick={addColumn}
+          className="justify-center items-center hover:bg-gray-100 flex min-h-8 w-full gap-2 overflow-hidden h-8 bg-[#F6F6F6] px-2 border-l border-gray-200"
+          title="Add column"
+        >
           <img
             src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
             className="aspect-[1] object-contain w-5 self-stretch my-auto"
             alt="Add column"
           />
-        </div>
-        {Array.from({ length: Math.max(25, filteredData.length + 5) }, (_, index) => (
+        </button>
+        {Array.from({ length: Math.max(24, filteredData.length + 5) }, (_, index) => (
           <div key={index} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
         ))}
         <div className="flex min-h-3.5 w-full gap-2 h-8 bg-white py-2" />

@@ -113,6 +113,12 @@ export const useSpreadsheet = () => {
     }));
   }, [state.data]);
 
+  const addColumn = useCallback(() => {
+    console.log('Adding new column - functionality to be implemented');
+    // This would add a new column to the spreadsheet
+    // For now, just log the action
+  }, []);
+
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
       ...prev,
@@ -185,6 +191,7 @@ export const useSpreadsheet = () => {
     ...state,
     updateCell,
     addRow,
+    addColumn,
     deleteRow,
     sortData,
     filterData,
