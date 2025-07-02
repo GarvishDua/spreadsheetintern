@@ -13,7 +13,21 @@ export interface SpreadsheetState {
   sortConfig: { key: string; direction: 'asc' | 'desc' } | null;
   filterConfig: { [key: string]: string };
   customColumns: { name: string; data: string[] }[];
+  hiddenColumns: string[];
 }
+
+// Define predefined columns that can be managed
+export const PREDEFINED_COLUMNS = [
+  { key: 'jobRequest', name: 'Job Request' },
+  { key: 'submitted', name: 'Submitted' },
+  { key: 'status', name: 'Status' },
+  { key: 'submitter', name: 'Submitter' },
+  { key: 'url', name: 'URL' },
+  { key: 'assigned', name: 'ABC' },
+  { key: 'priority', name: 'Priority' },
+  { key: 'dueDate', name: 'Due Date' },
+  { key: 'estValue', name: 'Est. Value' }
+];
 
 export const useSpreadsheet = () => {
   const [state, setState] = useState<SpreadsheetState>({
@@ -82,7 +96,8 @@ export const useSpreadsheet = () => {
     selectedCell: null,
     sortConfig: null,
     filterConfig: {},
-    customColumns: []
+    customColumns: [],
+    hiddenColumns: []
   });
 
   const updateCell = useCallback((rowIndex: number, field: keyof SpreadsheetData, value: string | number) => {
@@ -154,16 +169,44 @@ export const useSpreadsheet = () => {
     }));
   }, []);
 
-  const deleteColumn = useCallback((columnIndex: number) => {
+  const deleteCustomColumn = useCallback((columnIndex: number) => {
     setState(prev => ({
       ...prev,
       customColumns: prev.customColumns.filter((_, index) => index !== columnIndex)
     }));
   }, []);
 
-  const renameColumn = useCallback((columnIndex: number, newName: string) => {
+  const deletePredefinedColumn = useCallback((columnKey: string) => {
+    setState(prev => ({
+      ...prev,
+      hiddenColumns: [...prev.hiddenColumns, columnKey]
+    }));
+  }, []);
+
+  const renamePredefinedColumn = useCallback((columnKey: string, newName: string) => {
+    // For predefined columns, we'll just update the display name in the component
+    // This is handled in the FunctionalSpreadsheetTable component
+    console.log(`Renaming predefined column ${columnKey} to ${newName}`);
+  }, []);
+
+  const renameCustomColumn = useCallback((columnIndex: number, newName: string) => {
     updateCustomColumnName(columnIndex, newName);
   }, [updateCustomColumnName]);
+
+  const getAllColumns = useCallback(() => {
+    const predefinedCols = PREDEFINED_COLUMNS
+      .filter(col => !state.hiddenColumns.includes(col.key))
+      .map(col => ({ ...col, type: 'predefined' as const }));
+    
+    const customCols = state.customColumns.map((col, index) => ({
+      key: `custom_${index}`,
+      name: col.name,
+      type: 'custom' as const,
+      index
+    }));
+
+    return [...predefinedCols, ...customCols];
+  }, [state.hiddenColumns, state.customColumns]);
 
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
@@ -244,13 +287,16 @@ export const useSpreadsheet = () => {
     addColumn,
     updateCustomColumnName,
     updateCustomColumnData,
-    deleteColumn,
-    renameColumn,
+    deleteCustomColumn,
+    deletePredefinedColumn,
+    renamePredefinedColumn,
+    renameCustomColumn,
     deleteRow,
     sortData,
     filterData,
     getFilteredData,
     selectCell,
-    exportToCSV
+    exportToCSV,
+    getAllColumns
   };
 };

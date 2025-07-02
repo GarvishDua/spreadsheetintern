@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { ColumnActionsMenu } from './ColumnActionsMenu';
 
+interface Column {
+  key: string;
+  name: string;
+  type: 'predefined' | 'custom';
+  index?: number;
+}
+
 interface FunctionalToolbarProps {
   onAddRow: () => void;
   onExport: () => void;
   onImport: (file: File) => void;
   onAddColumn: () => void;
-  onDeleteColumn: (columnIndex: number) => void;
-  onRenameColumn: (columnIndex: number, newName: string) => void;
-  customColumnsCount: number;
+  onDeleteCustomColumn: (columnIndex: number) => void;
+  onDeletePredefinedColumn: (columnKey: string) => void;
+  onRenameCustomColumn: (columnIndex: number, newName: string) => void;
+  onRenamePredefinedColumn: (columnKey: string, newName: string) => void;
+  allColumns: Column[];
 }
 
 export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
@@ -16,9 +25,11 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
   onExport,
   onImport,
   onAddColumn,
-  onDeleteColumn,
-  onRenameColumn,
-  customColumnsCount
+  onDeleteCustomColumn,
+  onDeletePredefinedColumn,
+  onRenameCustomColumn,
+  onRenamePredefinedColumn,
+  allColumns
 }) => {
   const [showToolbar, setShowToolbar] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -193,9 +204,11 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
         
         <ColumnActionsMenu
           onAddColumn={onAddColumn}
-          onDeleteColumn={onDeleteColumn}
-          onRenameColumn={onRenameColumn}
-          customColumnsCount={customColumnsCount}
+          onDeleteCustomColumn={onDeleteCustomColumn}
+          onDeletePredefinedColumn={onDeletePredefinedColumn}
+          onRenameCustomColumn={onRenameCustomColumn}
+          onRenamePredefinedColumn={onRenamePredefinedColumn}
+          allColumns={allColumns}
         />
       </div>
     </div>

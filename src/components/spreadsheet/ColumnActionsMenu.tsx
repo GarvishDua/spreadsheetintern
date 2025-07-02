@@ -7,43 +7,87 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+interface Column {
+  key: string;
+  name: string;
+  type: 'predefined' | 'custom';
+  index?: number;
+}
+
 interface ColumnActionsMenuProps {
   onAddColumn: () => void;
-  onDeleteColumn: (columnIndex: number) => void;
-  onRenameColumn: (columnIndex: number, newName: string) => void;
-  customColumnsCount: number;
+  onDeleteCustomColumn: (columnIndex: number) => void;
+  onDeletePredefinedColumn: (columnKey: string) => void;
+  onRenameCustomColumn: (columnIndex: number, newName: string) => void;
+  onRenamePredefinedColumn: (columnKey: string, newName: string) => void;
+  allColumns: Column[];
 }
 
 export const ColumnActionsMenu: React.FC<ColumnActionsMenuProps> = ({
   onAddColumn,
-  onDeleteColumn,
-  onRenameColumn,
-  customColumnsCount
+  onDeleteCustomColumn,
+  onDeletePredefinedColumn,
+  onRenameCustomColumn,
+  onRenamePredefinedColumn,
+  allColumns
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
-  const [selectedColumnIndex, setSelectedColumnIndex] = useState<number>(0);
+  const [selectedColumn, setSelectedColumn] = useState<Column | null>(null);
   const [newColumnName, setNewColumnName] = useState('');
+  const [actionType, setActionType] = useState<'delete' | 'rename' | null>(null);
 
-  const handleDeleteColumn = (columnIndex: number) => {
-    setSelectedColumnIndex(columnIndex);
+  const handleDeleteColumn = () => {
+    setActionType('delete');
     setShowDeleteDialog(true);
   };
 
-  const handleRenameColumn = (columnIndex: number) => {
-    setSelectedColumnIndex(columnIndex);
-    setNewColumnName(`Column ${columnIndex + 1}`);
+  const handleRenameColumn = () => {
+    setActionType('rename');
     setShowRenameDialog(true);
   };
 
+  const selectColumnForAction = (column: Column, action: 'delete' | 'rename') => {
+    setSelectedColumn(column);
+    if (action === 'delete') {
+      setShowDeleteDialog(false);
+      // Show confirmation dialog
+      setTimeout(() => {
+        setShowDeleteDialog(true);
+      }, 100);
+    } else {
+      setShowRenameDialog(false);
+      setNewColumnName(column.name);
+      setTimeout(() => {
+        setShowRenameDialog(true);
+      }, 100);
+    }
+  };
+
   const confirmDelete = () => {
-    onDeleteColumn(selectedColumnIndex);
+    if (selectedColumn) {
+      if (selectedColumn.type === 'custom' && selectedColumn.index !== undefined) {
+        onDeleteCustomColumn(selectedColumn.index);
+      } else if (selectedColumn.type === 'predefined') {
+        onDeletePredefinedColumn(selectedColumn.key);
+      }
+    }
     setShowDeleteDialog(false);
+    setSelectedColumn(null);
+    setActionType(null);
   };
 
   const confirmRename = () => {
-    onRenameColumn(selectedColumnIndex, newColumnName);
+    if (selectedColumn && newColumnName.trim()) {
+      if (selectedColumn.type === 'custom' && selectedColumn.index !== undefined) {
+        onRenameCustomColumn(selectedColumn.index, newColumnName);
+      } else if (selectedColumn.type === 'predefined') {
+        onRenamePredefinedColumn(selectedColumn.key, newColumnName);
+      }
+    }
     setShowRenameDialog(false);
+    setSelectedColumn(null);
+    setActionType(null);
     setNewColumnName('');
   };
 
@@ -64,52 +108,96 @@ export const ColumnActionsMenu: React.FC<ColumnActionsMenuProps> = ({
           <DropdownMenuItem onClick={onAddColumn} className="cursor-pointer">
             <span>Add New Column</span>
           </DropdownMenuItem>
-          {customColumnsCount > 0 && (
+          {allColumns.length > 0 && (
             <>
-              <DropdownMenuItem className="cursor-pointer">
-                <div className="w-full">
-                  <div className="font-medium text-gray-700 mb-1">Delete Column</div>
-                  {Array.from({ length: customColumnsCount }, (_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleDeleteColumn(index)}
-                      className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 rounded"
-                    >
-                      Delete Column {index + 1}
-                    </button>
-                  ))}
-                </div>
+              <DropdownMenuItem onClick={handleDeleteColumn} className="cursor-pointer">
+                <span>Delete Column</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <div className="w-full">
-                  <div className="font-medium text-gray-700 mb-1">Rename Column</div>
-                  {Array.from({ length: customColumnsCount }, (_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleRenameColumn(index)}
-                      className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 rounded"
-                    >
-                      Rename Column {index + 1}
-                    </button>
-                  ))}
-                </div>
+              <DropdownMenuItem onClick={handleRenameColumn} className="cursor-pointer">
+                <span>Rename Column</span>
               </DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Column Selection Dialog for Delete */}
+      {showDeleteDialog && actionType === 'delete' && !selectedColumn && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-96 overflow-y-auto">
+            <h3 className="text-lg font-medium mb-4">Select Column to Delete</h3>
+            <div className="space-y-2">
+              {allColumns.map((column) => (
+                <button
+                  key={column.key}
+                  onClick={() => selectColumnForAction(column, 'delete')}
+                  className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded border"
+                >
+                  {column.name} {column.type === 'predefined' ? '(Built-in)' : '(Custom)'}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 justify-end mt-4">
+              <button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setActionType(null);
+                }}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Column Selection Dialog for Rename */}
+      {showRenameDialog && actionType === 'rename' && !selectedColumn && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full max-h-96 overflow-y-auto">
+            <h3 className="text-lg font-medium mb-4">Select Column to Rename</h3>
+            <div className="space-y-2">
+              {allColumns.map((column) => (
+                <button
+                  key={column.key}
+                  onClick={() => selectColumnForAction(column, 'rename')}
+                  className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded border"
+                >
+                  {column.name} {column.type === 'predefined' ? '(Built-in)' : '(Custom)'}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 justify-end mt-4">
+              <button
+                onClick={() => {
+                  setShowRenameDialog(false);
+                  setActionType(null);
+                }}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Delete Confirmation Dialog */}
-      {showDeleteDialog && (
+      {showDeleteDialog && selectedColumn && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-lg font-medium mb-4">Delete Column</h3>
             <p className="text-gray-600 mb-4">
-              Are you sure you want to delete Column {selectedColumnIndex + 1}? This action cannot be undone.
+              Are you sure you want to delete "{selectedColumn.name}"? This action cannot be undone.
             </p>
             <div className="flex gap-2 justify-end">
               <button
-                onClick={() => setShowDeleteDialog(false)}
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setSelectedColumn(null);
+                  setActionType(null);
+                }}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
               >
                 Cancel
@@ -126,10 +214,11 @@ export const ColumnActionsMenu: React.FC<ColumnActionsMenuProps> = ({
       )}
 
       {/* Rename Dialog */}
-      {showRenameDialog && (
+      {showRenameDialog && selectedColumn && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-lg font-medium mb-4">Rename Column</h3>
+            <p className="text-sm text-gray-600 mb-2">Current name: {selectedColumn.name}</p>
             <input
               type="text"
               value={newColumnName}
@@ -139,7 +228,12 @@ export const ColumnActionsMenu: React.FC<ColumnActionsMenuProps> = ({
             />
             <div className="flex gap-2 justify-end">
               <button
-                onClick={() => setShowRenameDialog(false)}
+                onClick={() => {
+                  setShowRenameDialog(false);
+                  setSelectedColumn(null);
+                  setActionType(null);
+                  setNewColumnName('');
+                }}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
               >
                 Cancel

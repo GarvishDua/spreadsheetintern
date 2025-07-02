@@ -11,9 +11,11 @@ const Index = () => {
     addRow, 
     exportToCSV, 
     addColumn, 
-    deleteColumn, 
-    renameColumn, 
-    customColumns 
+    deleteCustomColumn,
+    deletePredefinedColumn,
+    renameCustomColumn,
+    renamePredefinedColumn,
+    getAllColumns
   } = useSpreadsheet();
 
   const handleImport = (file: File) => {
@@ -34,9 +36,11 @@ const Index = () => {
           onExport={exportToCSV}
           onImport={handleImport}
           onAddColumn={addColumn}
-          onDeleteColumn={deleteColumn}
-          onRenameColumn={renameColumn}
-          customColumnsCount={customColumns.length}
+          onDeleteCustomColumn={deleteCustomColumn}
+          onDeletePredefinedColumn={deletePredefinedColumn}
+          onRenameCustomColumn={renameCustomColumn}
+          onRenamePredefinedColumn={renamePredefinedColumn}
+          allColumns={getAllColumns()}
         />
         <FunctionalSpreadsheetTable />
         <ViewTabs />
