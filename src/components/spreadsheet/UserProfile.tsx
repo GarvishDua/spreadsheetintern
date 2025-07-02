@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 
 export const UserProfile: React.FC = () => {
@@ -48,7 +49,7 @@ export const UserProfile: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[1000] min-w-52">
+        <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999] min-w-52">
           <div className="p-3 border-b border-gray-100">
             <div className="flex items-center gap-3">
               <img

@@ -18,6 +18,7 @@ interface FunctionalTableColumnProps {
   onSelectCell: (row: number, col: string) => void;
   onSort: (field: keyof SpreadsheetData) => void;
   onFilter: (field: string, value: string) => void;
+  onAddRow: () => void;
 }
 
 export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({ 
@@ -33,7 +34,8 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
   onUpdateCell,
   onSelectCell,
   onSort,
-  onFilter
+  onFilter,
+  onAddRow
 }) => {
   return (
     <div className={width}>
@@ -57,23 +59,47 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
         <FilterDropdown field={field as string} onFilter={onFilter} data={data} />
       </div>
       
-      {data.map((row, index) => (
-        <EditableCell
-          key={`${field}-${index}`}
-          value={row[field]}
-          type={type}
-          isSelected={selectedCell?.row === index && selectedCell?.col === field}
-          onUpdate={(value) => onUpdateCell(index, field, value)}
-          onSelect={() => onSelectCell(index, field as string)}
+      {Array.from({ length: Math.max(100, data.length + 20) }, (_, index) => (
+        <div key={`${field}-${index}`} className="border-b border-gray-100">
+          {index < data.length ? (
+            <EditableCell
+              value={data[index][field]}
+              type={type}
+              isSelected={selectedCell?.row === index && selectedCell?.col === field}
+              onUpdate={(value) => onUpdateCell(index, field, value)}
+              onSelect={() => onSelectCell(index, field as string)}
+            />
+          ) : (
+            <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
+              <input
+                type="text"
+                className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto bg-transparent border-none outline-none"
+                placeholder=""
+                onClick={() => onSelectCell(index, field as string)}
+                onChange={(e) => {
+                  // Add new row if typing in empty cell
+                  if (index >= data.length && e.target.value) {
+                    onAddRow();
+                  }
+                }}
+              />
+            </div>
+          )}
+        </div>
+      ))}
+      
+      {/* Add row button */}
+      <button 
+        onClick={onAddRow}
+        className="justify-center items-center hover:bg-gray-100 flex min-h-8 w-full gap-2 overflow-hidden h-8 bg-[#F6F6F6] px-2 border-b border-gray-100"
+        title="Add row"
+      >
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
+          className="aspect-[1] object-contain w-4 self-stretch my-auto"
+          alt="Add row"
         />
-      ))}
-      
-      {/* Filler cells */}
-      {Array.from({ length: Math.max(0, 19 - data.length) }, (_, index) => (
-        <div key={`filler-${index}`} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
-      ))}
-      
-      <div className="flex min-h-3.5 w-full gap-2 h-8 bg-white py-2" />
+      </button>
     </div>
   );
 };

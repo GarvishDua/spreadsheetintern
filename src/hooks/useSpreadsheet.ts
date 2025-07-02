@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { SpreadsheetData } from '@/types/spreadsheet';
 
@@ -12,7 +13,7 @@ export interface SpreadsheetState {
   selectedCell: { row: number; col: string } | null;
   sortConfig: { key: string; direction: 'asc' | 'desc' } | null;
   filterConfig: { [key: string]: string };
-  customColumns: { [key: string]: any }[];
+  customColumns: { name: string; data: string[] }[];
 }
 
 export const useSpreadsheet = () => {
@@ -110,13 +111,17 @@ export const useSpreadsheet = () => {
     
     setState(prev => ({
       ...prev,
-      data: [...prev.data, newRow]
+      data: [...prev.data, newRow],
+      customColumns: prev.customColumns.map(col => ({
+        ...col,
+        data: [...col.data, '']
+      }))
     }));
   }, [state.data]);
 
   const addColumn = useCallback(() => {
     const columnName = `Column ${state.customColumns.length + 1}`;
-    const newColumn = Array(Math.max(25, state.data.length + 20)).fill('');
+    const newColumn = Array(Math.max(100, state.data.length + 20)).fill('');
     
     setState(prev => ({
       ...prev,
@@ -138,7 +143,13 @@ export const useSpreadsheet = () => {
       ...prev,
       customColumns: prev.customColumns.map((col, index) => 
         index === columnIndex 
-          ? { ...col, data: col.data.map((data, dataIndex) => dataIndex === rowIndex ? value : data) }
+          ? { 
+              ...col, 
+              data: col.data.map((data, dataIndex) => {
+                if (dataIndex === rowIndex) return value;
+                return data;
+              })
+            }
           : col
       )
     }));
@@ -147,7 +158,11 @@ export const useSpreadsheet = () => {
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
       ...prev,
-      data: prev.data.filter((_, index) => index !== rowIndex)
+      data: prev.data.filter((_, index) => index !== rowIndex),
+      customColumns: prev.customColumns.map(col => ({
+        ...col,
+        data: col.data.filter((_, index) => index !== rowIndex)
+      }))
     }));
   }, []);
 

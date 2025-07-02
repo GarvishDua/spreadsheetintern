@@ -15,7 +15,8 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
     addColumn,
     customColumns,
     updateCustomColumnName,
-    updateCustomColumnData
+    updateCustomColumnData,
+    addRow
   } = useSpreadsheet();
 
   const filteredData = getFilteredData();
@@ -34,38 +35,33 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
             />
           </div>
         </div>
-        {Array.from({ length: Math.max(25, filteredData.length + 20) }, (_, index) => (
-          <div key={index} className="justify-center items-center flex w-8 flex-col overflow-hidden text-sm text-[#757575] font-normal whitespace-nowrap text-center leading-none h-8 bg-white px-[3px]">
+        {Array.from({ length: Math.max(100, filteredData.length + 20) }, (_, index) => (
+          <div key={index} className="justify-center items-center flex w-8 flex-col overflow-hidden text-sm text-[#757575] font-normal whitespace-nowrap text-center leading-none h-8 bg-white px-[3px] border-b border-gray-100">
             <div className="text-[#757575]">{index + 1}</div>
           </div>
         ))}
+        {/* Add row button */}
+        <button 
+          onClick={addRow}
+          className="justify-center items-center hover:bg-gray-100 flex w-8 flex-col overflow-hidden h-8 bg-[#F6F6F6] px-[3px] border-b border-gray-100"
+          title="Add row"
+        >
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
+            className="aspect-[1] object-contain w-4 self-stretch my-auto"
+            alt="Add row"
+          />
+        </button>
       </div>
 
       {/* Main columns - no wrapping */}
       <div className="flex items-stretch gap-px h-full min-w-0">
-        {/* Grouped columns header */}
-        <div className="items-center absolute z-0 flex min-w-60 min-h-8 w-[631px] gap-2 overflow-hidden text-xs text-[#545454] font-normal leading-none flex-wrap h-8 bg-[#E2E2E2] px-2 py-1 top-0 inset-x-0 max-md:max-w-full">
-          <div className="items-center rounded self-stretch flex gap-1 bg-[#EEE] my-auto p-1">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/74062749cd139ea98092fe39d5f6b239e9939c6f?placeholderIfAbsent=true"
-              className="aspect-[1] object-contain w-4 self-stretch shrink-0 my-auto"
-              alt="Link icon"
-            />
-            <div className="text-[#545454] self-stretch my-auto">Q3 Financial Overview</div>
-          </div>
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/c100ca763ec4aff47165d43cd2b97ea5344b6eef?placeholderIfAbsent=true"
-            className="aspect-[1] object-contain w-4 self-stretch shrink-0 my-auto"
-            alt="External link"
-          />
-        </div>
-
         {/* Data columns */}
         <FunctionalTableColumn
           title="Job Request"
           field="jobRequest"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b81bcddf685fee52ceedab9ecec89062f32b6aba?placeholderIfAbsent=true"
-          width="z-0 min-w-60 w-64 flex-shrink-0"
+          width="min-w-60 w-64 flex-shrink-0"
           data={filteredData}
           type="text"
           selectedCell={selectedCell}
@@ -73,13 +69,14 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
         
         <FunctionalTableColumn
           title="Submitted"
           field="submitted"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b49eeec444b1234a6d36e5b7250b0a8b3cb37fe8?placeholderIfAbsent=true"
-          width="z-0 w-[124px] flex-shrink-0"
+          width="w-[124px] flex-shrink-0"
           data={filteredData}
           type="date"
           selectedCell={selectedCell}
@@ -87,13 +84,14 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
         
         <FunctionalTableColumn
           title="Status"
           field="status"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/ab14ea5932651394d199f5a75d26440d058c3207?placeholderIfAbsent=true"
-          width="z-0 w-[124px] flex-shrink-0"
+          width="w-[124px] flex-shrink-0"
           data={filteredData}
           type="status"
           selectedCell={selectedCell}
@@ -101,13 +99,14 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
         
         <FunctionalTableColumn
           title="Submitter"
           field="submitter"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/6817df46af5bb11d131e74a09a3132b2a58a7ec6?placeholderIfAbsent=true"
-          width="z-0 w-[124px] flex-shrink-0"
+          width="w-[124px] flex-shrink-0"
           data={filteredData}
           type="text"
           selectedCell={selectedCell}
@@ -115,6 +114,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
         
         <FunctionalTableColumn
@@ -129,9 +129,9 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
 
-        {/* ABC Column - now aligned with other headers */}
         <FunctionalTableColumn
           title="ABC"
           field="assigned"
@@ -146,9 +146,9 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
 
-        {/* Priority Column - aligned with other headers */}
         <FunctionalTableColumn
           title="Priority"
           field="priority"
@@ -163,9 +163,9 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
         
-        {/* Due Date Column - aligned with other headers */}
         <FunctionalTableColumn
           title="Due Date"
           field="dueDate"
@@ -180,9 +180,9 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
 
-        {/* Est. Value Column - aligned with other headers */}
         <FunctionalTableColumn
           title="Est. Value"
           field="estValue"
@@ -197,6 +197,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSelectCell={selectCell}
           onSort={sortData}
           onFilter={filterData}
+          onAddRow={addRow}
         />
 
         {/* Custom columns */}
@@ -214,8 +215,8 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
                 />
               </div>
             </div>
-            {Array.from({ length: Math.max(25, filteredData.length + 20) }, (_, rowIndex) => (
-              <div key={rowIndex} className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
+            {Array.from({ length: Math.max(100, filteredData.length + 20) }, (_, rowIndex) => (
+              <div key={rowIndex} className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2 border-b border-gray-100">
                 <input
                   type="text"
                   value={column.data[rowIndex] || ''}
@@ -225,6 +226,18 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
                 />
               </div>
             ))}
+            {/* Add row button for this column */}
+            <button 
+              onClick={addRow}
+              className="justify-center items-center hover:bg-gray-100 flex min-h-8 w-full gap-2 overflow-hidden h-8 bg-[#F6F6F6] px-2 border-b border-gray-100"
+              title="Add row"
+            >
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
+                className="aspect-[1] object-contain w-4 self-stretch my-auto"
+                alt="Add row"
+              />
+            </button>
           </div>
         ))}
 
@@ -242,9 +255,21 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
               alt="Add column"
             />
           </button>
-          {Array.from({ length: Math.max(24, filteredData.length + 20) }, (_, index) => (
-            <div key={index} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
+          {Array.from({ length: Math.max(100, filteredData.length + 20) }, (_, index) => (
+            <div key={index} className="flex min-h-8 w-full gap-2 h-8 bg-white py-2 border-b border-gray-100" />
           ))}
+          {/* Add row button */}
+          <button 
+            onClick={addRow}
+            className="justify-center items-center hover:bg-gray-100 flex min-h-8 w-full gap-2 overflow-hidden h-8 bg-[#F6F6F6] px-2 border-b border-gray-100"
+            title="Add row"
+          >
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
+              className="aspect-[1] object-contain w-4 self-stretch my-auto"
+              alt="Add row"
+            />
+          </button>
         </div>
       </div>
     </main>
