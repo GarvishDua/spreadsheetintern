@@ -1,169 +1,136 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBadge } from './StatusBadge';
 
 interface EditableCellProps {
-  value: any;
-  type: 'text' | 'date' | 'status' | 'url' | 'currency';
+  value: string | number;
+  type: 'text' | 'date' | 'status' | 'url' | 'currency' | 'priority';
   isSelected: boolean;
   onUpdate: (value: string | number) => void;
   onSelect: () => void;
 }
 
-export const EditableCell: React.FC<EditableCellProps> = ({ 
-  value, 
-  type, 
-  isSelected, 
-  onUpdate, 
-  onSelect 
+export const EditableCell: React.FC<EditableCellProps> = ({
+  value,
+  type,
+  isSelected,
+  onUpdate,
+  onSelect
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(String(value));
-  const inputRef = useRef<HTMLInputElement>(null);
-  const selectRef = useRef<HTMLSelectElement>(null);
+  const [editValue, setEditValue] = useState(value?.toString() || '');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-    if (isEditing && selectRef.current) {
-      selectRef.current.focus();
-    }
-  }, [isEditing]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
 
-  const handleDoubleClick = () => {
-    setEditValue(String(value));
-    setIsEditing(true);
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSave();
-    } else if (e.key === 'Escape') {
-      setIsEditing(false);
-      setEditValue(String(value));
-    }
-  };
+  useEffect(() => {
+    setEditValue(value?.toString() || '');
+  }, [value]);
+
+  const statusOptions = ['In-process', 'Need to start', 'Complete', 'Blocked'];
+  const priorityOptions = ['High', 'Medium', 'Low'];
 
   const handleSave = () => {
-    const newValue = type === 'currency' ? parseFloat(editValue) || 0 : editValue;
-    onUpdate(newValue);
+    if (type === 'currency') {
+      onUpdate(parseFloat(editValue) || 0);
+    } else {
+      onUpdate(editValue);
+    }
     setIsEditing(false);
   };
 
-  const cellClasses = `justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs leading-none h-8 bg-white px-2 cursor-pointer hover:bg-gray-50 ${
+  const handleDropdownSelect = (option: string) => {
+    onUpdate(option);
+    setShowDropdown(false);
+  };
+
+  const renderValue = () => {
+    if (type === 'currency') {
+      return (value as number).toLocaleString();
+    }
+    return value?.toString() || '';
+  };
+
+  const cellClasses = `justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs leading-none h-8 bg-white px-2 relative ${
     isSelected ? 'border shadow-[0px_0px_4px_-2px_rgba(10,110,61,0.60),0px_0px_12px_0px_rgba(10,110,61,0.22)] border-solid border-[#6C8B70]' : ''
   }`;
 
-  if (isEditing) {
-    // Special dropdown for status and priority
-    if (type === 'status') {
-      return (
-        <div className={cellClasses}>
-          <select
-            ref={selectRef}
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onBlur={handleSave}
-            className="w-full h-full bg-transparent border-none outline-none text-xs"
-          >
-            <option value="In-process">In-process</option>
-            <option value="Need to start">Need to start</option>
-            <option value="Complete">Complete</option>
-            <option value="Blocked">Blocked</option>
-          </select>
-        </div>
-      );
-    }
-
-    // Special dropdown for priority (when field name is priority)
-    if (String(value) === 'High' || String(value) === 'Medium' || String(value) === 'Low') {
-      return (
-        <div className={cellClasses}>
-          <select
-            ref={selectRef}
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onBlur={handleSave}
-            className="w-full h-full bg-transparent border-none outline-none text-xs"
-          >
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </div>
-      );
-    }
-
+  if (type === 'status' || type === 'priority') {
+    const options = type === 'status' ? statusOptions : priorityOptions;
+    
     return (
-      <div className={cellClasses}>
-        <input
-          ref={inputRef}
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={handleSave}
-          className="w-full h-full bg-transparent border-none outline-none text-xs"
-        />
+      <div className={cellClasses} onClick={onSelect} ref={dropdownRef}>
+        <div className="relative w-full">
+          {type === 'status' ? (
+            <StatusBadge status={value as any} />
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDropdown(!showDropdown);
+              }}
+              className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto w-full text-left"
+            >
+              {value || 'Select...'}
+            </button>
+          )}
+          
+          {showDropdown && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[100] min-w-full">
+              {options.map((option) => (
+                <button
+                  key={option}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDropdownSelect(option);
+                  }}
+                  className="w-full px-3 py-2 text-sm text-left hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
-  const renderContent = () => {
-    switch (type) {
-      case 'status':
-        return <StatusBadge status={String(value)} />;
-      case 'url':
-        return (
-          <div className="text-[#121212] text-ellipsis underline decoration-solid decoration-auto underline-offset-auto self-stretch flex-1 shrink basis-[0%] my-auto">
-            {String(value)}
-          </div>
-        );
-      case 'date':
-        return (
-          <div className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto text-right">
-            {String(value)}
-          </div>
-        );
-      case 'currency':
-        return (
-          <>
-            <div className="text-[#121212] text-ellipsis font-normal self-stretch flex-1 shrink basis-[0%] my-auto text-right">
-              {Number(value).toLocaleString()}
-            </div>
-            <div className="text-[#AFAFAF] text-ellipsis font-medium self-stretch my-auto">₹</div>
-          </>
-        );
-      default:
-        // Handle priority colors for text type
-        if (String(value) === 'High' || String(value) === 'Medium' || String(value) === 'Low') {
-          return (
-            <div className={`text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto ${
-              String(value) === 'High' ? 'text-[#EF4D44]' : 
-              String(value) === 'Medium' ? 'text-[#C29210]' : 'text-[#1A8CFF]'
-            }`}>
-              {String(value)}
-            </div>
-          );
-        }
-        return (
-          <div className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">
-            {String(value)}
-          </div>
-        );
-    }
-  };
-
   return (
-    <div 
-      className={cellClasses}
-      onClick={onSelect}
-      onDoubleClick={handleDoubleClick}
-    >
-      {renderContent()}
+    <div className={cellClasses} onClick={onSelect}>
+      {isEditing ? (
+        <input
+          type="text"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSave();
+            if (e.key === 'Escape') {
+              setEditValue(value?.toString() || '');
+              setIsEditing(false);
+            }
+          }}
+          className="w-full bg-transparent border-none outline-none text-[#121212] text-xs"
+          autoFocus
+        />
+      ) : (
+        <div 
+          className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto cursor-pointer w-full"
+          onDoubleClick={() => setIsEditing(true)}
+        >
+          {renderValue()}
+        </div>
+      )}
     </div>
   );
 };

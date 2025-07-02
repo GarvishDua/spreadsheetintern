@@ -116,13 +116,33 @@ export const useSpreadsheet = () => {
 
   const addColumn = useCallback(() => {
     const columnName = `Column ${state.customColumns.length + 1}`;
-    const newColumn = Array(state.data.length).fill('');
+    const newColumn = Array(Math.max(25, state.data.length + 20)).fill('');
     
     setState(prev => ({
       ...prev,
       customColumns: [...prev.customColumns, { name: columnName, data: newColumn }]
     }));
   }, [state.customColumns.length, state.data.length]);
+
+  const updateCustomColumnName = useCallback((columnIndex: number, newName: string) => {
+    setState(prev => ({
+      ...prev,
+      customColumns: prev.customColumns.map((col, index) => 
+        index === columnIndex ? { ...col, name: newName } : col
+      )
+    }));
+  }, []);
+
+  const updateCustomColumnData = useCallback((columnIndex: number, rowIndex: number, value: string) => {
+    setState(prev => ({
+      ...prev,
+      customColumns: prev.customColumns.map((col, index) => 
+        index === columnIndex 
+          ? { ...col, data: col.data.map((data, dataIndex) => dataIndex === rowIndex ? value : data) }
+          : col
+      )
+    }));
+  }, []);
 
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
@@ -197,6 +217,8 @@ export const useSpreadsheet = () => {
     updateCell,
     addRow,
     addColumn,
+    updateCustomColumnName,
+    updateCustomColumnData,
     deleteRow,
     sortData,
     filterData,

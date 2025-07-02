@@ -10,7 +10,7 @@ interface FunctionalTableColumnProps {
   icon: string;
   width: string;
   data: SpreadsheetData[];
-  type: 'text' | 'date' | 'status' | 'url' | 'currency';
+  type: 'text' | 'date' | 'status' | 'url' | 'currency' | 'priority';
   bgColor?: string;
   textColor?: string;
   selectedCell: { row: number; col: string } | null;

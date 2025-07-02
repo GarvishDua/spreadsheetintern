@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { FunctionalTableColumn } from './FunctionalTableColumn';
-import { FunctionColumn } from './FunctionColumn';
 import { useSpreadsheet } from '@/hooks/useSpreadsheet';
 
 export const FunctionalSpreadsheetTable: React.FC = () => {
@@ -14,7 +13,9 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
     filterData, 
     getFilteredData,
     addColumn,
-    customColumns
+    customColumns,
+    updateCustomColumnName,
+    updateCustomColumnData
   } = useSpreadsheet();
 
   const filteredData = getFilteredData();
@@ -116,7 +117,6 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onFilter={filterData}
         />
         
-        {/* URL Column */}
         <FunctionalTableColumn
           title="URL"
           field="url"
@@ -131,97 +131,73 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onFilter={filterData}
         />
 
-        {/* ABC Function Column */}
-        <FunctionColumn
+        {/* ABC Column - now aligned with other headers */}
+        <FunctionalTableColumn
           title="ABC"
-          icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/40afbf69a3542958fa4493f9c6793374bfa26a93?placeholderIfAbsent=true"
-          bgColor="#D2E0D4"
-          textColor="#505450"
-        >
-          <FunctionalTableColumn
-            title="Assigned"
-            field="assigned"
-            icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/1c4ecaa39d623b1b03ed2a7615002f51c0806fe4?placeholderIfAbsent=true"
-            width="w-[124px] flex-shrink-0"
-            data={filteredData}
-            type="text"
-            bgColor="#E8F0E9"
-            textColor="#666C66"
-            selectedCell={selectedCell}
-            onUpdateCell={updateCell}
-            onSelectCell={selectCell}
-            onSort={sortData}
-            onFilter={filterData}
-          />
-        </FunctionColumn>
+          field="assigned"
+          icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/1c4ecaa39d623b1b03ed2a7615002f51c0806fe4?placeholderIfAbsent=true"
+          width="w-[124px] flex-shrink-0"
+          data={filteredData}
+          type="text"
+          bgColor="#E8F0E9"
+          textColor="#666C66"
+          selectedCell={selectedCell}
+          onUpdateCell={updateCell}
+          onSelectCell={selectCell}
+          onSort={sortData}
+          onFilter={filterData}
+        />
 
-        {/* Answer a question Function Column */}
-        <FunctionColumn
-          title="Answer a question"
+        {/* Priority Column - aligned with other headers */}
+        <FunctionalTableColumn
+          title="Priority"
+          field="priority"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/34581e26dbfbba34a69c34509081720fa152bb61?placeholderIfAbsent=true"
-          bgColor="#DCCFFC"
-          textColor="#463E59"
-        >
-          <div className="flex items-stretch gap-px text-xs leading-none h-full">
-            {/* Priority column */}
-            <FunctionalTableColumn
-              title="Priority"
-              field="priority"
-              icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/34581e26dbfbba34a69c34509081720fa152bb61?placeholderIfAbsent=true"
-              width="w-[124px] flex-shrink-0"
-              data={filteredData}
-              type="text"
-              bgColor="#EAE3FC"
-              textColor="#655C80"
-              selectedCell={selectedCell}
-              onUpdateCell={updateCell}
-              onSelectCell={selectCell}
-              onSort={sortData}
-              onFilter={filterData}
-            />
-            
-            {/* Due Date column */}
-            <FunctionalTableColumn
-              title="Due Date"
-              field="dueDate"
-              icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b49eeec444b1234a6d36e5b7250b0a8b3cb37fe8?placeholderIfAbsent=true"
-              width="w-[124px] flex-shrink-0"
-              data={filteredData}
-              type="date"
-              bgColor="#EAE3FC"
-              textColor="#655C80"
-              selectedCell={selectedCell}
-              onUpdateCell={updateCell}
-              onSelectCell={selectCell}
-              onSort={sortData}
-              onFilter={filterData}
-            />
-          </div>
-        </FunctionColumn>
+          width="w-[124px] flex-shrink-0"
+          data={filteredData}
+          type="priority"
+          bgColor="#EAE3FC"
+          textColor="#655C80"
+          selectedCell={selectedCell}
+          onUpdateCell={updateCell}
+          onSelectCell={selectCell}
+          onSort={sortData}
+          onFilter={filterData}
+        />
+        
+        {/* Due Date Column - aligned with other headers */}
+        <FunctionalTableColumn
+          title="Due Date"
+          field="dueDate"
+          icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b49eeec444b1234a6d36e5b7250b0a8b3cb37fe8?placeholderIfAbsent=true"
+          width="w-[124px] flex-shrink-0"
+          data={filteredData}
+          type="date"
+          bgColor="#EAE3FC"
+          textColor="#655C80"
+          selectedCell={selectedCell}
+          onUpdateCell={updateCell}
+          onSelectCell={selectCell}
+          onSort={sortData}
+          onFilter={filterData}
+        />
 
-        {/* Extract Function Column */}
-        <FunctionColumn
-          title="Extract"
+        {/* Est. Value Column - aligned with other headers */}
+        <FunctionalTableColumn
+          title="Est. Value"
+          field="estValue"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/8a41883192674f8b4caa1e387e0ae048ffa42dff?placeholderIfAbsent=true"
-          bgColor="#FAC2AF"
-          textColor="#695149"
-        >
-          <FunctionalTableColumn
-            title="Est. Value"
-            field="estValue"
-            icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/8a41883192674f8b4caa1e387e0ae048ffa42dff?placeholderIfAbsent=true"
-            width="w-[124px] flex-shrink-0"
-            data={filteredData}
-            type="currency"
-            bgColor="#FFE9E0"
-            textColor="#8C6C62"
-            selectedCell={selectedCell}
-            onUpdateCell={updateCell}
-            onSelectCell={selectCell}
-            onSort={sortData}
-            onFilter={filterData}
-          />
-        </FunctionColumn>
+          width="w-[124px] flex-shrink-0"
+          data={filteredData}
+          type="currency"
+          bgColor="#FFE9E0"
+          textColor="#8C6C62"
+          selectedCell={selectedCell}
+          onUpdateCell={updateCell}
+          onSelectCell={selectCell}
+          onSort={sortData}
+          onFilter={filterData}
+        />
 
         {/* Custom columns */}
         {customColumns.map((column, colIndex) => (
@@ -229,16 +205,24 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
             <div className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
             <div className="items-center flex min-h-8 w-full gap-1 h-8 bg-[#EEE] pl-2 pr-1">
               <div className="self-stretch flex w-full items-center gap-1 flex-1 shrink basis-[0%] my-auto">
-                <div className="text-[#757575] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto text-xs font-semibold">
-                  {column.name}
-                </div>
+                <input
+                  type="text"
+                  value={column.name}
+                  onChange={(e) => updateCustomColumnName(colIndex, e.target.value)}
+                  className="text-[#757575] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto text-xs font-semibold bg-transparent border-none outline-none"
+                  placeholder="Column name"
+                />
               </div>
             </div>
             {Array.from({ length: Math.max(25, filteredData.length + 20) }, (_, rowIndex) => (
               <div key={rowIndex} className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
-                <div className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">
-                  {column.data[rowIndex] || ''}
-                </div>
+                <input
+                  type="text"
+                  value={column.data[rowIndex] || ''}
+                  onChange={(e) => updateCustomColumnData(colIndex, rowIndex, e.target.value)}
+                  className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto bg-transparent border-none outline-none"
+                  placeholder=""
+                />
               </div>
             ))}
           </div>
