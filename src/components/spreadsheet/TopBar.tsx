@@ -13,7 +13,9 @@ export const TopBar: React.FC = () => {
         />
         <ol className="self-stretch flex min-w-60 items-center gap-1 my-auto">
           <li className="self-stretch flex items-center gap-2 text-sm text-[#AFAFAF] font-medium whitespace-nowrap leading-none justify-center my-auto">
-            <span className="text-[#AFAFAF] self-stretch my-auto">Workspace</span>
+            <button className="text-[#AFAFAF] self-stretch my-auto hover:text-[#757575] cursor-pointer transition-colors">
+              Workspace
+            </button>
           </li>
           <li aria-hidden="true">
             <img
@@ -23,7 +25,9 @@ export const TopBar: React.FC = () => {
             />
           </li>
           <li className="self-stretch flex items-center gap-2 text-sm text-[#AFAFAF] font-medium leading-none justify-center my-auto">
-            <span className="text-[#AFAFAF] self-stretch my-auto">Folder 2</span>
+            <button className="text-[#AFAFAF] self-stretch my-auto hover:text-[#757575] cursor-pointer transition-colors">
+              Folder 2
+            </button>
           </li>
           <li aria-hidden="true">
             <img

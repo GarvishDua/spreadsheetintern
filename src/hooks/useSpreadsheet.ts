@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { SpreadsheetData } from '@/types/spreadsheet';
 
@@ -117,13 +116,13 @@ export const useSpreadsheet = () => {
 
   const addColumn = useCallback(() => {
     const columnName = `Column ${state.customColumns.length + 1}`;
-    const newColumn = state.data.map(() => '');
+    const newColumn = Array(state.data.length).fill('');
     
     setState(prev => ({
       ...prev,
       customColumns: [...prev.customColumns, { name: columnName, data: newColumn }]
     }));
-  }, [state.customColumns.length, state.data]);
+  }, [state.customColumns.length, state.data.length]);
 
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
