@@ -19,6 +19,7 @@ interface FunctionalTableColumnProps {
   onSort: (field: keyof SpreadsheetData) => void;
   onFilter: (field: string, value: string) => void;
   onAddRow: () => void;
+  onDeleteRow?: (rowIndex: number) => void;
 }
 
 export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({ 
@@ -35,7 +36,8 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
   onSelectCell,
   onSort,
   onFilter,
-  onAddRow
+  onAddRow,
+  onDeleteRow
 }) => {
   return (
     <div className={width}>
@@ -68,6 +70,7 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
               isSelected={selectedCell?.row === index && selectedCell?.col === field}
               onUpdate={(value) => onUpdateCell(index, field, value)}
               onSelect={() => onSelectCell(index, field as string)}
+              onDelete={() => onDeleteRow?.(index)}
             />
           ) : (
             <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
@@ -77,7 +80,6 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
                 placeholder=""
                 onClick={() => onSelectCell(index, field as string)}
                 onChange={(e) => {
-                  // Add new row if typing in empty cell
                   if (index >= data.length && e.target.value) {
                     onAddRow();
                   }
@@ -88,7 +90,6 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
         </div>
       ))}
       
-      {/* Add row button */}
       <button 
         onClick={onAddRow}
         className="justify-center items-center hover:bg-gray-100 flex min-h-8 w-full gap-2 overflow-hidden h-8 bg-[#F6F6F6] px-2 border-b border-gray-100"

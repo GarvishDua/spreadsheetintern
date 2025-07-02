@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { SpreadsheetData } from '@/types/spreadsheet';
 
@@ -155,6 +154,17 @@ export const useSpreadsheet = () => {
     }));
   }, []);
 
+  const deleteColumn = useCallback((columnIndex: number) => {
+    setState(prev => ({
+      ...prev,
+      customColumns: prev.customColumns.filter((_, index) => index !== columnIndex)
+    }));
+  }, []);
+
+  const renameColumn = useCallback((columnIndex: number, newName: string) => {
+    updateCustomColumnName(columnIndex, newName);
+  }, [updateCustomColumnName]);
+
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
       ...prev,
@@ -234,6 +244,8 @@ export const useSpreadsheet = () => {
     addColumn,
     updateCustomColumnName,
     updateCustomColumnData,
+    deleteColumn,
+    renameColumn,
     deleteRow,
     sortData,
     filterData,

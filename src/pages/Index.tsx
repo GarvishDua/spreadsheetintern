@@ -7,16 +7,20 @@ import { ViewTabs } from '@/components/spreadsheet/ViewTabs';
 import { useSpreadsheet } from '@/hooks/useSpreadsheet';
 
 const Index = () => {
-  const { addRow, exportToCSV } = useSpreadsheet();
+  const { 
+    addRow, 
+    exportToCSV, 
+    addColumn, 
+    deleteColumn, 
+    renameColumn, 
+    customColumns 
+  } = useSpreadsheet();
 
   const handleImport = (file: File) => {
-    // Basic CSV import functionality
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
       console.log('Imported file content:', text);
-      // Here you would parse the CSV and update the spreadsheet data
-      // For now, just log the content
     };
     reader.readAsText(file);
   };
@@ -29,6 +33,10 @@ const Index = () => {
           onAddRow={addRow}
           onExport={exportToCSV}
           onImport={handleImport}
+          onAddColumn={addColumn}
+          onDeleteColumn={deleteColumn}
+          onRenameColumn={renameColumn}
+          customColumnsCount={customColumns.length}
         />
         <FunctionalSpreadsheetTable />
         <ViewTabs />

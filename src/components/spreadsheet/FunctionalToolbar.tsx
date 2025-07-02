@@ -1,16 +1,24 @@
-
 import React, { useState } from 'react';
+import { ColumnActionsMenu } from './ColumnActionsMenu';
 
 interface FunctionalToolbarProps {
   onAddRow: () => void;
   onExport: () => void;
   onImport: (file: File) => void;
+  onAddColumn: () => void;
+  onDeleteColumn: (columnIndex: number) => void;
+  onRenameColumn: (columnIndex: number, newName: string) => void;
+  customColumnsCount: number;
 }
 
 export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
   onAddRow,
   onExport,
-  onImport
+  onImport,
+  onAddColumn,
+  onDeleteColumn,
+  onRenameColumn,
+  customColumnsCount
 }) => {
   const [showToolbar, setShowToolbar] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -183,17 +191,12 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
           </button>
         </div>
         
-        <button 
-          onClick={onAddRow}
-          className="justify-center items-center self-stretch flex gap-1 overflow-hidden text-white font-medium bg-[#4B6A4F] hover:bg-[#3d5540] my-auto px-6 py-2 rounded-md max-md:px-5"
-        >
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/94c3e57cef7c076e9385a016fcc1065fa509c355?placeholderIfAbsent=true"
-            className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
-            alt="Add row icon"
-          />
-          <span className="text-white text-ellipsis self-stretch my-auto">New Action</span>
-        </button>
+        <ColumnActionsMenu
+          onAddColumn={onAddColumn}
+          onDeleteColumn={onDeleteColumn}
+          onRenameColumn={onRenameColumn}
+          customColumnsCount={customColumnsCount}
+        />
       </div>
     </div>
   );

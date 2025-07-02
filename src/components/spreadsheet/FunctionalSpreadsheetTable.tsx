@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FunctionalTableColumn } from './FunctionalTableColumn';
 import { useSpreadsheet } from '@/hooks/useSpreadsheet';
@@ -16,7 +15,10 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
     customColumns,
     updateCustomColumnName,
     updateCustomColumnData,
-    addRow
+    deleteColumn,
+    renameColumn,
+    addRow,
+    deleteRow
   } = useSpreadsheet();
 
   const filteredData = getFilteredData();
@@ -70,6 +72,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
         
         <FunctionalTableColumn
@@ -85,6 +88,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
         
         <FunctionalTableColumn
@@ -100,6 +104,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
         
         <FunctionalTableColumn
@@ -115,6 +120,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
         
         <FunctionalTableColumn
@@ -130,6 +136,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
 
         <FunctionalTableColumn
@@ -147,6 +154,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
 
         <FunctionalTableColumn
@@ -164,6 +172,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
         
         <FunctionalTableColumn
@@ -181,6 +190,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
 
         <FunctionalTableColumn
@@ -198,6 +208,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
           onSort={sortData}
           onFilter={filterData}
           onAddRow={addRow}
+          onDeleteRow={deleteRow}
         />
 
         {/* Custom columns */}

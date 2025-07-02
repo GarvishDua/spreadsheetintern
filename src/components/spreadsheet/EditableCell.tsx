@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { StatusBadge } from './StatusBadge';
 
 interface EditableCellProps {
@@ -7,6 +8,7 @@ interface EditableCellProps {
   isSelected: boolean;
   onUpdate: (value: string | number) => void;
   onSelect: () => void;
+  onDelete?: () => void;
 }
 
 export const EditableCell: React.FC<EditableCellProps> = ({
@@ -14,123 +16,124 @@ export const EditableCell: React.FC<EditableCellProps> = ({
   type,
   isSelected,
   onUpdate,
-  onSelect
+  onSelect,
+  onDelete
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(value?.toString() || '');
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [editValue, setEditValue] = useState(String(value || ''));
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    setEditValue(value?.toString() || '');
+    setEditValue(String(value || ''));
   }, [value]);
 
-  const statusOptions = ['In-process', 'Need to start', 'Complete', 'Blocked'];
-  const priorityOptions = ['High', 'Medium', 'Low'];
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSave();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditValue(String(value || ''));
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      // Allow deletion for all types
+      if (!isEditing) {
+        onUpdate('');
+      }
+    }
+  };
 
   const handleSave = () => {
     if (type === 'currency') {
-      onUpdate(parseFloat(editValue) || 0);
+      const numValue = parseFloat(editValue) || 0;
+      onUpdate(numValue);
     } else {
       onUpdate(editValue);
     }
     setIsEditing(false);
   };
 
-  const handleDropdownSelect = (option: string) => {
-    onUpdate(option);
-    setShowDropdown(false);
+  const handleBlur = () => {
+    handleSave();
   };
 
-  const renderValue = () => {
+  const formatValue = (val: string | number) => {
     if (type === 'currency') {
-      return (value as number).toLocaleString();
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(Number(val) || 0);
     }
-    return value?.toString() || '';
+    return String(val || '');
   };
 
-  const cellClasses = `justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs leading-none h-8 bg-white px-2 relative ${
-    isSelected ? 'border shadow-[0px_0px_4px_-2px_rgba(10,110,61,0.60),0px_0px_12px_0px_rgba(10,110,61,0.22)] border-solid border-[#6C8B70]' : ''
-  }`;
-
-  if (type === 'status' || type === 'priority') {
-    const options = type === 'status' ? statusOptions : priorityOptions;
-    
+  if (isEditing) {
     return (
-      <div className={cellClasses} onClick={onSelect} ref={dropdownRef}>
-        <div className="relative w-full">
-          {type === 'status' ? (
-            <StatusBadge status={value as any} />
-          ) : (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowDropdown(!showDropdown);
-              }}
-              className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto w-full text-left"
-            >
-              {value || 'Select...'}
-            </button>
-          )}
-          
-          {showDropdown && (
-            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[100] min-w-full">
-              {options.map((option) => (
-                <button
-                  key={option}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDropdownSelect(option);
-                  }}
-                  className="w-full px-3 py-2 text-sm text-left hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={cellClasses} onClick={onSelect}>
-      {isEditing ? (
+      <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
         <input
           type="text"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSave();
-            if (e.key === 'Escape') {
-              setEditValue(value?.toString() || '');
-              setIsEditing(false);
-            }
-          }}
-          className="w-full bg-transparent border-none outline-none text-[#121212] text-xs"
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto bg-transparent border-none outline-none"
           autoFocus
         />
-      ) : (
-        <div 
-          className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto cursor-pointer w-full"
-          onDoubleClick={() => setIsEditing(true)}
+      </div>
+    );
+  }
+
+  const cellContent = () => {
+    if (type === 'status' && value) {
+      return <StatusBadge status={value as any} />;
+    }
+    
+    if (type === 'priority' && value) {
+      const priorityColors = {
+        'High': 'bg-red-100 text-red-800',
+        'Medium': 'bg-yellow-100 text-yellow-800',
+        'Low': 'bg-green-100 text-green-800'
+      };
+      return (
+        <span className={`px-2 py-1 rounded text-xs font-medium ${priorityColors[value as keyof typeof priorityColors] || 'bg-gray-100 text-gray-800'}`}>
+          {value}
+        </span>
+      );
+    }
+
+    if (type === 'url' && value) {
+      return (
+        <a 
+          href={String(value).startsWith('http') ? String(value) : `https://${value}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+          onClick={(e) => e.stopPropagation()}
         >
-          {renderValue()}
-        </div>
-      )}
+          {value}
+        </a>
+      );
+    }
+
+    return formatValue(value);
+  };
+
+  return (
+    <div 
+      className={`justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 px-2 cursor-pointer ${
+        isSelected ? 'bg-blue-50 border-2 border-blue-500' : 'bg-white hover:bg-gray-50'
+      }`}
+      onClick={onSelect}
+      onDoubleClick={handleDoubleClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+    >
+      <div className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto">
+        {cellContent()}
+      </div>
     </div>
   );
 };
