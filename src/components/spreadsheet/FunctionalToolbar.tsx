@@ -72,24 +72,23 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
   };
 
   return (
-    <>
-      {/* Animated toolbar */}
-      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-        isVisible ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
-      }`}>
-        <div className="items-center flex w-full gap-2 text-sm leading-none flex-wrap bg-white px-2 py-1.5 border-b-[#EEE] border-b border-solid max-md:max-w-full">
-          <button 
-            onClick={onToggleVisibility}
-            className="justify-center items-center rounded self-stretch flex gap-1 text-[#121212] font-normal bg-white my-auto p-2"
-          >
-            <span className="text-[#121212] self-stretch my-auto">Tool bar</span>
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/538101e69dc18c456b432d6017bdc7f9822d1094?placeholderIfAbsent=true"
-              className="aspect-[1] object-contain w-4 self-stretch shrink-0 my-auto"
-              alt="Dropdown arrow"
-            />
-          </button>
-          
+    <div className="items-center flex w-full gap-2 text-sm leading-none flex-wrap bg-white px-2 py-1.5 border-b-[#EEE] border-b border-solid max-md:max-w-full">
+      {/* Always visible toolbar button */}
+      <button 
+        onClick={onToggleVisibility}
+        className="justify-center items-center rounded self-stretch flex gap-1 text-[#121212] font-normal bg-white my-auto p-2 hover:bg-gray-100"
+      >
+        <span className="text-[#121212] self-stretch my-auto">Tool bar</span>
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/538101e69dc18c456b432d6017bdc7f9822d1094?placeholderIfAbsent=true"
+          className={`aspect-[1] object-contain w-4 self-stretch shrink-0 my-auto transition-transform ${isVisible ? 'rotate-180' : ''}`}
+          alt="Dropdown arrow"
+        />
+      </button>
+      
+      {/* Conditionally visible toolbar content */}
+      {isVisible && (
+        <>
           <div className="self-stretch flex w-px shrink-0 h-6 bg-[#EEE] my-auto" role="separator" />
           
           <div className="self-stretch flex min-w-60 items-center gap-1 text-[#121212] font-normal flex-wrap flex-1 shrink basis-4 my-auto max-md:max-w-full">
@@ -190,8 +189,8 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
               allColumns={allColumns}
             />
           </div>
-        </div>
-      </div>
-    </>
+        </>
+      )}
+    </div>
   );
 };
