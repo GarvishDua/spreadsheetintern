@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { SpreadsheetData } from '@/types/spreadsheet';
 
@@ -14,6 +15,7 @@ export interface SpreadsheetState {
   filterConfig: { [key: string]: string };
   customColumns: { name: string; data: string[] }[];
   hiddenColumns: string[];
+  predefinedColumnNames: { [key: string]: string };
 }
 
 // Define predefined columns that can be managed
@@ -97,7 +99,8 @@ export const useSpreadsheet = () => {
     sortConfig: null,
     filterConfig: {},
     customColumns: [],
-    hiddenColumns: []
+    hiddenColumns: [],
+    predefinedColumnNames: {}
   });
 
   const updateCell = useCallback((rowIndex: number, field: keyof SpreadsheetData, value: string | number) => {
@@ -184,9 +187,13 @@ export const useSpreadsheet = () => {
   }, []);
 
   const renamePredefinedColumn = useCallback((columnKey: string, newName: string) => {
-    // For predefined columns, we'll just update the display name in the component
-    // This is handled in the FunctionalSpreadsheetTable component
-    console.log(`Renaming predefined column ${columnKey} to ${newName}`);
+    setState(prev => ({
+      ...prev,
+      predefinedColumnNames: {
+        ...prev.predefinedColumnNames,
+        [columnKey]: newName
+      }
+    }));
   }, []);
 
   const renameCustomColumn = useCallback((columnIndex: number, newName: string) => {
@@ -196,7 +203,11 @@ export const useSpreadsheet = () => {
   const getAllColumns = useCallback(() => {
     const predefinedCols = PREDEFINED_COLUMNS
       .filter(col => !state.hiddenColumns.includes(col.key))
-      .map(col => ({ ...col, type: 'predefined' as const }));
+      .map(col => ({ 
+        ...col, 
+        name: state.predefinedColumnNames[col.key] || col.name,
+        type: 'predefined' as const 
+      }));
     
     const customCols = state.customColumns.map((col, index) => ({
       key: `custom_${index}`,
@@ -206,7 +217,7 @@ export const useSpreadsheet = () => {
     }));
 
     return [...predefinedCols, ...customCols];
-  }, [state.hiddenColumns, state.customColumns]);
+  }, [state.hiddenColumns, state.customColumns, state.predefinedColumnNames]);
 
   const deleteRow = useCallback((rowIndex: number) => {
     setState(prev => ({
@@ -280,6 +291,10 @@ export const useSpreadsheet = () => {
     URL.revokeObjectURL(url);
   }, [state.data]);
 
+  const getPredefinedColumnDisplayName = useCallback((columnKey: string) => {
+    return state.predefinedColumnNames[columnKey] || PREDEFINED_COLUMNS.find(col => col.key === columnKey)?.name || columnKey;
+  }, [state.predefinedColumnNames]);
+
   return {
     ...state,
     updateCell,
@@ -297,6 +312,7 @@ export const useSpreadsheet = () => {
     getFilteredData,
     selectCell,
     exportToCSV,
-    getAllColumns
+    getAllColumns,
+    getPredefinedColumnDisplayName
   };
 };

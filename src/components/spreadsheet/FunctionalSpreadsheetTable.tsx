@@ -17,7 +17,8 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
     updateCustomColumnName,
     updateCustomColumnData,
     addRow,
-    deleteRow
+    deleteRow,
+    getPredefinedColumnDisplayName
   } = useSpreadsheet();
 
   const filteredData = getFilteredData();
@@ -59,7 +60,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
       <div className="flex items-stretch gap-px h-full min-w-0">
         {/* Data columns */}
         <FunctionalTableColumn
-          title="Job Request"
+          title={getPredefinedColumnDisplayName("jobRequest")}
           field="jobRequest"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b81bcddf685fee52ceedab9ecec89062f32b6aba?placeholderIfAbsent=true"
           width="min-w-60 w-64 flex-shrink-0"
@@ -75,7 +76,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
         
         <FunctionalTableColumn
-          title="Submitted"
+          title={getPredefinedColumnDisplayName("submitted")}
           field="submitted"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b49eeec444b1234a6d36e5b7250b0a8b3cb37fe8?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -91,7 +92,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
         
         <FunctionalTableColumn
-          title="Status"
+          title={getPredefinedColumnDisplayName("status")}
           field="status"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/ab14ea5932651394d199f5a75d26440d058c3207?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -107,7 +108,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
         
         <FunctionalTableColumn
-          title="Submitter"
+          title={getPredefinedColumnDisplayName("submitter")}
           field="submitter"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/6817df46af5bb11d131e74a09a3132b2a58a7ec6?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -123,7 +124,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
         
         <FunctionalTableColumn
-          title="URL"
+          title={getPredefinedColumnDisplayName("url")}
           field="url"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/4c6d2dae59857d909c36383484a7e9049fedd2e1?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -139,7 +140,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
 
         <FunctionalTableColumn
-          title="ABC"
+          title={getPredefinedColumnDisplayName("assigned")}
           field="assigned"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/1c4ecaa39d623b1b03ed2a7615002f51c0806fe4?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -157,7 +158,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
 
         <FunctionalTableColumn
-          title="Priority"
+          title={getPredefinedColumnDisplayName("priority")}
           field="priority"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/34581e26dbfbba34a69c34509081720fa152bb61?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -175,7 +176,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
         
         <FunctionalTableColumn
-          title="Due Date"
+          title={getPredefinedColumnDisplayName("dueDate")}
           field="dueDate"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b49eeec444b1234a6d36e5b7250b0a8b3cb37fe8?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -193,7 +194,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
         />
 
         <FunctionalTableColumn
-          title="Est. Value"
+          title={getPredefinedColumnDisplayName("estValue")}
           field="estValue"
           icon="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/8a41883192674f8b4caa1e387e0ae048ffa42dff?placeholderIfAbsent=true"
           width="w-[124px] flex-shrink-0"
@@ -226,14 +227,17 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
               </div>
             </div>
             {Array.from({ length: Math.max(100, filteredData.length + 20) }, (_, rowIndex) => (
-              <div key={rowIndex} className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2 border-b border-gray-100">
-                <input
-                  type="text"
-                  value={column.data[rowIndex] || ''}
-                  onChange={(e) => updateCustomColumnData(colIndex, rowIndex, e.target.value)}
-                  className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto bg-transparent border-none outline-none"
-                  placeholder=""
-                />
+              <div key={rowIndex} className="border-b border-gray-100">
+                <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
+                  <input
+                    type="text"
+                    value={column.data[rowIndex] || ''}
+                    onChange={(e) => updateCustomColumnData(colIndex, rowIndex, e.target.value)}
+                    className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto bg-transparent border-none outline-none"
+                    placeholder=""
+                    onClick={() => selectCell(rowIndex, `custom_${colIndex}`)}
+                  />
+                </div>
               </div>
             ))}
             {/* Add row button for this column */}
@@ -243,7 +247,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
               title="Add row"
             >
               <img
-                src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
+                src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3dfad70dc5a2d748e?placeholderIfAbsent=true"
                 className="aspect-[1] object-contain w-4 self-stretch my-auto"
                 alt="Add row"
               />

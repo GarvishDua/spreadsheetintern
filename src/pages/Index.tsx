@@ -15,6 +15,8 @@ const Index = () => {
     deletePredefinedColumn,
     renameCustomColumn,
     renamePredefinedColumn,
+    sortData,
+    filterData,
     getAllColumns
   } = useSpreadsheet();
 
@@ -25,6 +27,14 @@ const Index = () => {
       console.log('Imported file content:', text);
     };
     reader.readAsText(file);
+  };
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    sortData(field as any);
+  };
+
+  const handleFilter = (field: string, value: string) => {
+    filterData(field, value);
   };
 
   return (
@@ -40,6 +50,8 @@ const Index = () => {
           onDeletePredefinedColumn={deletePredefinedColumn}
           onRenameCustomColumn={renameCustomColumn}
           onRenamePredefinedColumn={renamePredefinedColumn}
+          onSort={handleSort}
+          onFilter={handleFilter}
           allColumns={getAllColumns()}
         />
         <FunctionalSpreadsheetTable />

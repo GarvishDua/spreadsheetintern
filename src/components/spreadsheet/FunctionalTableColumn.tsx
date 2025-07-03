@@ -73,19 +73,17 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
               onDelete={() => onDeleteRow?.(index)}
             />
           ) : (
-            <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
-              <input
-                type="text"
-                className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto bg-transparent border-none outline-none"
-                placeholder=""
-                onClick={() => onSelectCell(index, field as string)}
-                onChange={(e) => {
-                  if (index >= data.length && e.target.value) {
-                    onAddRow();
-                  }
-                }}
-              />
-            </div>
+            <EditableCell
+              value=""
+              type={type}
+              isSelected={selectedCell?.row === index && selectedCell?.col === field}
+              onUpdate={(value) => {
+                if (value && index >= data.length) {
+                  onAddRow();
+                }
+              }}
+              onSelect={() => onSelectCell(index, field as string)}
+            />
           )}
         </div>
       ))}
