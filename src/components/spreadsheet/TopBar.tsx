@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UserProfile } from './UserProfile';
 
@@ -37,9 +36,9 @@ export const TopBar: React.FC = () => {
             />
           </li>
           <li className="self-stretch flex items-center gap-2 justify-center my-auto" aria-current="page">
-            <span className="text-[#121212] text-sm font-medium leading-none self-stretch my-auto">
+            <button className="text-[#121212] text-sm font-medium leading-none self-stretch my-auto cursor-pointer">
               Spreadsheet 3
-            </span>
+            </button>
             <button className="rounded self-stretch flex min-h-6 items-center gap-2 justify-center w-6 my-auto" aria-label="Edit spreadsheet name">
               <img
                 src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/496fe36ae7d91955bfe0d05771c55be562f1aec7?placeholderIfAbsent=true"
