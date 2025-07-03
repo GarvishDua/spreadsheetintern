@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { FunctionalTableColumn } from './FunctionalTableColumn';
 import { useSpreadsheet } from '@/hooks/useSpreadsheet';
@@ -15,8 +16,6 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
     customColumns,
     updateCustomColumnName,
     updateCustomColumnData,
-    deleteColumn,
-    renameColumn,
     addRow,
     deleteRow
   } = useSpreadsheet();
@@ -261,7 +260,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
             title="Add column"
           >
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
+              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3dfad70dc5a2d748e?placeholderIfAbsent=true"
               className="aspect-[1] object-contain w-5 self-stretch my-auto"
               alt="Add column"
             />
@@ -276,7 +275,7 @@ export const FunctionalSpreadsheetTable: React.FC = () => {
             title="Add row"
           >
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3fdad70dc5a2d748e?placeholderIfAbsent=true"
+              src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/5892c516af1fe83227bb32d3dfad70dc5a2d748e?placeholderIfAbsent=true"
               className="aspect-[1] object-contain w-4 self-stretch my-auto"
               alt="Add row"
             />
