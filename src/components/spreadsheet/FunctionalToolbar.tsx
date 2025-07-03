@@ -16,6 +16,10 @@ interface FunctionalToolbarProps {
   allColumns: any[];
   isVisible: boolean;
   onToggleVisibility: () => void;
+  onShowHideFields?: () => void;
+  onShowSort?: () => void;
+  onShowFilter?: () => void;
+  onShowCellView?: () => void;
 }
 
 export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
@@ -31,7 +35,11 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
   onFilter,
   allColumns,
   isVisible,
-  onToggleVisibility
+  onToggleVisibility,
+  onShowHideFields,
+  onShowSort,
+  onShowFilter,
+  onShowCellView
 }) => {
   const [importFile, setImportFile] = useState<File | null>(null);
 
@@ -43,18 +51,28 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
     }
   };
 
+  const handleHideFields = () => {
+    console.log('Hide fields clicked');
+    onShowHideFields?.();
+  };
+
+  const handleSort = () => {
+    console.log('Sort clicked');
+    onShowSort?.();
+  };
+
+  const handleFilter = () => {
+    console.log('Filter clicked');
+    onShowFilter?.();
+  };
+
+  const handleCellView = () => {
+    console.log('Cell view clicked');
+    onShowCellView?.();
+  };
+
   return (
     <>
-      {/* Toggle button - always visible */}
-      <div className="flex justify-start p-2 bg-white border-b">
-        <button
-          onClick={onToggleVisibility}
-          className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-        >
-          {isVisible ? 'Hide Toolbar' : 'Show Toolbar'}
-        </button>
-      </div>
-      
       {/* Animated toolbar */}
       <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
         isVisible ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
@@ -75,7 +93,10 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
           <div className="self-stretch flex w-px shrink-0 h-6 bg-[#EEE] my-auto" role="separator" />
           
           <div className="self-stretch flex min-w-60 items-center gap-1 text-[#121212] font-normal flex-wrap flex-1 shrink basis-4 my-auto max-md:max-w-full">
-            <button className="items-center self-stretch flex gap-1 bg-white my-auto pl-2 pr-3 py-2 rounded-md">
+            <button 
+              onClick={handleHideFields}
+              className="items-center self-stretch flex gap-1 bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-100"
+            >
               <img
                 src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/9860df1c6a9687811ba2d20e2a65d34ead28bdc7?placeholderIfAbsent=true"
                 className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
@@ -84,7 +105,10 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
               <span className="text-[#121212] self-stretch my-auto">Hide fields</span>
             </button>
             
-            <button className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md">
+            <button 
+              onClick={handleSort}
+              className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-100"
+            >
               <img
                 src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/dd2173c3d4555e1e9d82cf5b4d8b42407f316503?placeholderIfAbsent=true"
                 className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
@@ -93,7 +117,10 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
               <span className="text-[#121212] self-stretch my-auto">Sort</span>
             </button>
             
-            <button className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md">
+            <button 
+              onClick={handleFilter}
+              className="items-center self-stretch flex gap-1 whitespace-nowrap bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-100"
+            >
               <img
                 src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/9afd84bb9e48fe5d8497bad0e3838204b2a70d22?placeholderIfAbsent=true"
                 className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
@@ -102,7 +129,10 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
               <span className="text-[#121212] self-stretch my-auto">Filter</span>
             </button>
             
-            <button className="items-center self-stretch flex gap-1 bg-white my-auto pl-2 pr-3 py-2 rounded-md">
+            <button 
+              onClick={handleCellView}
+              className="items-center self-stretch flex gap-1 bg-white my-auto pl-2 pr-3 py-2 rounded-md hover:bg-gray-100"
+            >
               <img
                 src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/e64a7381d31dbd01717c8617015775a5ba7a76b1?placeholderIfAbsent=true"
                 className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
@@ -114,7 +144,7 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
           
           <div className="self-stretch flex min-w-60 items-center gap-2 my-auto max-md:max-w-full">
             <div className="self-stretch flex min-w-60 gap-2 text-[#545454] font-normal whitespace-nowrap my-auto">
-              <label className="items-center border flex gap-1 bg-white pl-2 pr-3 py-2 rounded-md border-solid border-[#EEE] cursor-pointer">
+              <label className="items-center border flex gap-1 bg-white pl-2 pr-3 py-2 rounded-md border-solid border-[#EEE] cursor-pointer hover:bg-gray-50">
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/b63cb03c6944d84770befa29adaf796dc81dadc7?placeholderIfAbsent=true"
                   className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"
@@ -131,7 +161,7 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
               
               <button 
                 onClick={onExport}
-                className="items-center border flex gap-1 bg-white pl-2 pr-3 py-2 rounded-md border-solid border-[#EEE]"
+                className="items-center border flex gap-1 bg-white pl-2 pr-3 py-2 rounded-md border-solid border-[#EEE] hover:bg-gray-50"
               >
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/85fd3a9cc95b2c3e53edeba77fd2b0125eb78f03?placeholderIfAbsent=true"
@@ -141,7 +171,7 @@ export const FunctionalToolbar: React.FC<FunctionalToolbarProps> = ({
                 <span className="text-[#545454] self-stretch my-auto">Export</span>
               </button>
               
-              <button className="items-center border flex gap-1 bg-white pl-2 pr-3 py-2 rounded-md border-solid border-[#EEE]">
+              <button className="items-center border flex gap-1 bg-white pl-2 pr-3 py-2 rounded-md border-solid border-[#EEE] hover:bg-gray-50">
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets/0aed864de5054c59beaee32239f10d33/6fcb33bb6f655a5cf2f103edb220bc353f3d5c90?placeholderIfAbsent=true"
                   className="aspect-[1] object-contain w-5 self-stretch shrink-0 my-auto"

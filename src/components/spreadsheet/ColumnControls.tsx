@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Eye, EyeOff, Maximize2 } from 'lucide-react';
+import { MoreHorizontal, Eye, EyeOff } from 'lucide-react';
 
 interface ColumnControlsProps {
   columnKey: string;
@@ -23,78 +23,80 @@ export const ColumnControls: React.FC<ColumnControlsProps> = ({
   onToggleVisibility,
   onResizeColumn
 }) => {
-  const [isResizing, setIsResizing] = useState(false);
-  const [tempWidth, setTempWidth] = useState(width);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [startWidth, setStartWidth] = useState(width);
+  const resizeHandleRef = useRef<HTMLDivElement>(null);
 
-  const handleResize = () => {
-    setIsResizing(true);
-  };
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      
+      const deltaX = e.clientX - startX;
+      const newWidth = Math.max(50, Math.min(500, startWidth + deltaX));
+      onResizeColumn(columnKey, newWidth);
+    };
 
-  const handleResizeSubmit = () => {
-    onResizeColumn(columnKey, tempWidth);
-    setIsResizing(false);
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging, startX, startWidth, columnKey, onResizeColumn]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+    setStartX(e.clientX);
+    setStartWidth(width);
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="p-1 hover:bg-gray-200 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-          <MoreHorizontal className="h-3 w-3" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={() => onToggleVisibility(columnKey)}>
-          {isVisible ? (
-            <>
-              <EyeOff className="mr-2 h-4 w-4" />
-              Hide Column
-            </>
-          ) : (
-            <>
-              <Eye className="mr-2 h-4 w-4" />
-              Show Column
-            </>
-          )}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleResize}>
-          <Maximize2 className="mr-2 h-4 w-4" />
-          Resize Column
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+    <div className="flex items-center">
+      {/* Resize handle */}
+      <div
+        ref={resizeHandleRef}
+        className="w-1 h-6 cursor-col-resize hover:bg-blue-500 bg-transparent border-r border-gray-300 opacity-0 group-hover:opacity-100 transition-opacity"
+        onMouseDown={handleMouseDown}
+        title="Drag to resize column"
+      />
       
-      {isResizing && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold mb-4">Resize Column</h3>
-            <div className="flex items-center gap-4">
-              <label htmlFor="width" className="text-sm">Width (px):</label>
-              <input
-                id="width"
-                type="number"
-                value={tempWidth}
-                onChange={(e) => setTempWidth(Number(e.target.value))}
-                className="border rounded px-2 py-1 w-20"
-                min="50"
-                max="500"
-              />
-            </div>
-            <div className="flex justify-end gap-2 mt-4">
-              <button
-                onClick={() => setIsResizing(false)}
-                className="px-3 py-1 text-sm border rounded hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleResizeSubmit}
-                className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </DropdownMenu>
+      {/* Column menu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="p-1 hover:bg-gray-200 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+            <MoreHorizontal className="h-3 w-3" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={() => onToggleVisibility(columnKey)}>
+            {isVisible ? (
+              <>
+                <EyeOff className="mr-2 h-4 w-4" />
+                Hide Column
+              </>
+            ) : (
+              <>
+                <Eye className="mr-2 h-4 w-4" />
+                Show Column
+              </>
+            )}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 };
