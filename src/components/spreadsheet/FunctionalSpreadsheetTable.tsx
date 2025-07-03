@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { FunctionalTableColumn } from './FunctionalTableColumn';
+import { ColumnControls } from './ColumnControls';
 import { useSpreadsheet } from '@/hooks/useSpreadsheet';
 
 export const FunctionalSpreadsheetTable: React.FC = () => {
