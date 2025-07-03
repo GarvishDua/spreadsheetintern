@@ -17,7 +17,9 @@ const Index = () => {
     renamePredefinedColumn,
     sortData,
     filterData,
-    getAllColumns
+    getAllColumns,
+    isToolbarVisible,
+    toggleToolbar
   } = useSpreadsheet();
 
   const handleImport = (file: File) => {
@@ -53,6 +55,8 @@ const Index = () => {
           onSort={handleSort}
           onFilter={handleFilter}
           allColumns={getAllColumns()}
+          isVisible={isToolbarVisible}
+          onToggleVisibility={toggleToolbar}
         />
         <FunctionalSpreadsheetTable />
         <ViewTabs />

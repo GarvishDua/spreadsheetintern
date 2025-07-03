@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { SpreadsheetData } from '@/types/spreadsheet';
 
@@ -16,6 +15,8 @@ export interface SpreadsheetState {
   customColumns: { name: string; data: string[] }[];
   hiddenColumns: string[];
   predefinedColumnNames: { [key: string]: string };
+  columnWidths: { [key: string]: number };
+  isToolbarVisible: boolean;
 }
 
 // Define predefined columns that can be managed
@@ -100,7 +101,9 @@ export const useSpreadsheet = () => {
     filterConfig: {},
     customColumns: [],
     hiddenColumns: [],
-    predefinedColumnNames: {}
+    predefinedColumnNames: {},
+    columnWidths: {},
+    isToolbarVisible: true
   });
 
   const updateCell = useCallback((rowIndex: number, field: keyof SpreadsheetData, value: string | number) => {
@@ -123,7 +126,7 @@ export const useSpreadsheet = () => {
       assigned: '',
       priority: 'Medium',
       dueDate: '',
-      estValue: 0
+      estValue: '' as any // Remove default zero value
     };
     
     setState(prev => ({
@@ -135,6 +138,65 @@ export const useSpreadsheet = () => {
       }))
     }));
   }, [state.data]);
+
+  const toggleColumnVisibility = useCallback((columnKey: string) => {
+    setState(prev => ({
+      ...prev,
+      hiddenColumns: prev.hiddenColumns.includes(columnKey)
+        ? prev.hiddenColumns.filter(col => col !== columnKey)
+        : [...prev.hiddenColumns, columnKey]
+    }));
+  }, []);
+
+  const updateColumnWidth = useCallback((columnKey: string, width: number) => {
+    setState(prev => ({
+      ...prev,
+      columnWidths: {
+        ...prev.columnWidths,
+        [columnKey]: width
+      }
+    }));
+  }, []);
+
+  const navigateCell = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+    if (!state.selectedCell) return;
+    
+    const { row, col } = state.selectedCell;
+    const allColumns = getAllColumns();
+    const visibleColumns = allColumns.filter(c => !state.hiddenColumns.includes(c.key));
+    const currentColIndex = visibleColumns.findIndex(c => c.key === col);
+    
+    let newRow = row;
+    let newCol = col;
+    
+    switch (direction) {
+      case 'up':
+        newRow = Math.max(0, row - 1);
+        break;
+      case 'down':
+        newRow = Math.min(Math.max(100, state.data.length + 19), row + 1);
+        break;
+      case 'left':
+        if (currentColIndex > 0) {
+          newCol = visibleColumns[currentColIndex - 1].key;
+        }
+        break;
+      case 'right':
+        if (currentColIndex < visibleColumns.length - 1) {
+          newCol = visibleColumns[currentColIndex + 1].key;
+        }
+        break;
+    }
+    
+    selectCell(newRow, newCol);
+  }, [state.selectedCell, state.hiddenColumns, state.data.length]);
+
+  const toggleToolbar = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      isToolbarVisible: !prev.isToolbarVisible
+    }));
+  }, []);
 
   const addColumn = useCallback(() => {
     const columnName = `Column ${state.customColumns.length + 1}`;
@@ -313,6 +375,10 @@ export const useSpreadsheet = () => {
     selectCell,
     exportToCSV,
     getAllColumns,
-    getPredefinedColumnDisplayName
+    getPredefinedColumnDisplayName,
+    toggleColumnVisibility,
+    updateColumnWidth,
+    navigateCell,
+    toggleToolbar
   };
 };

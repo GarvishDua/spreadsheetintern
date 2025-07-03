@@ -2,6 +2,7 @@
 import React from 'react';
 import { EditableCell } from './EditableCell';
 import { FilterDropdown } from './FilterDropdown';
+import { ColumnControls } from './ColumnControls';
 import { SpreadsheetData } from '@/types/spreadsheet';
 
 interface FunctionalTableColumnProps {
@@ -9,6 +10,7 @@ interface FunctionalTableColumnProps {
   field: keyof SpreadsheetData;
   icon: string;
   width: string;
+  customWidth?: number;
   data: SpreadsheetData[];
   type: 'text' | 'date' | 'status' | 'url' | 'currency' | 'priority';
   bgColor?: string;
@@ -20,6 +22,10 @@ interface FunctionalTableColumnProps {
   onFilter: (field: string, value: string) => void;
   onAddRow: () => void;
   onDeleteRow?: (rowIndex: number) => void;
+  onNavigateCell?: (direction: 'up' | 'down' | 'left' | 'right') => void;
+  onToggleVisibility?: (columnKey: string) => void;
+  onResizeColumn?: (columnKey: string, width: number) => void;
+  isVisible?: boolean;
 }
 
 export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({ 
@@ -27,6 +33,7 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
   field,
   icon, 
   width, 
+  customWidth,
   data, 
   type,
   bgColor = '#EEE',
@@ -37,13 +44,23 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
   onSort,
   onFilter,
   onAddRow,
-  onDeleteRow
+  onDeleteRow,
+  onNavigateCell,
+  onToggleVisibility,
+  onResizeColumn,
+  isVisible = true
 }) => {
+  const columnStyle = customWidth ? { width: `${customWidth}px`, minWidth: `${customWidth}px`, maxWidth: `${customWidth}px` } : {};
+  
+  if (!isVisible) {
+    return null;
+  }
+
   return (
-    <div className={width}>
+    <div className={width} style={columnStyle}>
       <div className="flex min-h-8 w-full gap-2 h-8 bg-white py-2" />
       
-      <div className="items-center flex min-h-8 w-full gap-1 h-8 pl-2 pr-1" style={{ backgroundColor: bgColor }}>
+      <div className="items-center flex min-h-8 w-full gap-1 h-8 pl-2 pr-1 group" style={{ backgroundColor: bgColor }}>
         <div className="self-stretch flex items-center gap-1 text-xs font-semibold leading-none flex-1 shrink basis-[0%] my-auto" style={{ color: textColor }}>
           <img
             src={icon}
@@ -58,6 +75,15 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
             {title}
           </button>
         </div>
+        {onToggleVisibility && onResizeColumn && (
+          <ColumnControls
+            columnKey={field as string}
+            isVisible={isVisible}
+            width={customWidth}
+            onToggleVisibility={onToggleVisibility}
+            onResizeColumn={onResizeColumn}
+          />
+        )}
         <FilterDropdown field={field as string} onFilter={onFilter} data={data} />
       </div>
       
@@ -71,6 +97,7 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
               onUpdate={(value) => onUpdateCell(index, field, value)}
               onSelect={() => onSelectCell(index, field as string)}
               onDelete={() => onDeleteRow?.(index)}
+              onNavigate={onNavigateCell}
             />
           ) : (
             <EditableCell
@@ -83,6 +110,7 @@ export const FunctionalTableColumn: React.FC<FunctionalTableColumnProps> = ({
                 }
               }}
               onSelect={() => onSelectCell(index, field as string)}
+              onNavigate={onNavigateCell}
             />
           )}
         </div>

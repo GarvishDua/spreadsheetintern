@@ -9,6 +9,7 @@ interface EditableCellProps {
   onUpdate: (value: string | number) => void;
   onSelect: () => void;
   onDelete?: () => void;
+  onNavigate?: (direction: 'up' | 'down' | 'left' | 'right') => void;
 }
 
 export const EditableCell: React.FC<EditableCellProps> = ({
@@ -17,7 +18,8 @@ export const EditableCell: React.FC<EditableCellProps> = ({
   isSelected,
   onUpdate,
   onSelect,
-  onDelete
+  onDelete,
+  onNavigate
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value || ''));
@@ -31,14 +33,30 @@ export const EditableCell: React.FC<EditableCellProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSave();
-    } else if (e.key === 'Escape') {
-      setIsEditing(false);
-      setEditValue(String(value || ''));
-    } else if (e.key === 'Delete' || e.key === 'Backspace') {
-      // Allow deletion for all types
-      if (!isEditing) {
+    if (isEditing) {
+      if (e.key === 'Enter') {
+        handleSave();
+      } else if (e.key === 'Escape') {
+        setIsEditing(false);
+        setEditValue(String(value || ''));
+      }
+    } else {
+      // Handle navigation when not editing
+      if (e.key === 'ArrowUp' && onNavigate) {
+        e.preventDefault();
+        onNavigate('up');
+      } else if (e.key === 'ArrowDown' && onNavigate) {
+        e.preventDefault();
+        onNavigate('down');
+      } else if (e.key === 'ArrowLeft' && onNavigate) {
+        e.preventDefault();
+        onNavigate('left');
+      } else if (e.key === 'ArrowRight' && onNavigate) {
+        e.preventDefault();
+        onNavigate('right');
+      } else if (e.key === 'Enter' || e.key === 'F2') {
+        setIsEditing(true);
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
         onUpdate('');
       }
     }
@@ -46,7 +64,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
 
   const handleSave = () => {
     if (type === 'currency') {
-      const numValue = parseFloat(editValue) || 0;
+      const numValue = parseFloat(editValue) || '';
       onUpdate(numValue);
     } else {
       onUpdate(editValue);
@@ -59,7 +77,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
   };
 
   const formatValue = (val: string | number) => {
-    if (type === 'currency') {
+    if (type === 'currency' && val !== '' && val !== null && val !== undefined) {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -70,11 +88,56 @@ export const EditableCell: React.FC<EditableCellProps> = ({
     return String(val || '');
   };
 
+  const getEditInputType = () => {
+    switch (type) {
+      case 'date':
+        return 'date';
+      case 'currency':
+        return 'number';
+      case 'url':
+        return 'url';
+      default:
+        return 'text';
+    }
+  };
+
+  const getSelectOptions = () => {
+    if (type === 'status') {
+      return ['In-process', 'Need to start', 'Complete', 'Blocked'];
+    }
+    if (type === 'priority') {
+      return ['High', 'Medium', 'Low'];
+    }
+    return [];
+  };
+
   if (isEditing) {
+    const selectOptions = getSelectOptions();
+    
+    if (selectOptions.length > 0) {
+      return (
+        <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
+          <select
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="text-[#121212] text-ellipsis self-stretch flex-1 shrink basis-[0%] my-auto bg-transparent border-none outline-none"
+            autoFocus
+          >
+            <option value="">Select...</option>
+            {selectOptions.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
     return (
       <div className="justify-center items-center flex min-h-8 w-full gap-2 overflow-hidden text-xs h-8 bg-white px-2">
         <input
-          type="text"
+          type={getEditInputType()}
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleBlur}
